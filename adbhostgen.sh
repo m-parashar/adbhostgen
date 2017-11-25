@@ -1,11 +1,12 @@
 #!/bin/sh
-# Modified Pi-hole script to generate a hosts file for DD-WRT (tested on Netgear R8500)
+# Modified Pi-hole script to generate a MEGA hosts file for DD-WRT (tested on Netgear R8500)
 # for use with dnsmasq's addn-hosts configuration
-# ref0 : https://github.com/jacobsalmela/pi-hole/blob/master/gravity-adv.sh
-# ref1 : https://gist.github.com/chrisvella/5f3a18f1e442153cd685
-# ref2 : https://gist.github.com/p-hash/ff8e5b85f3be236010c8cefe8b3e97c0
+# thanks1 : https://gist.github.com/chrisvella/5f3a18f1e442153cd685
+# thanks2 : https://gist.github.com/p-hash/ff8e5b85f3be236010c8cefe8b3e97c0
+#
 # @Manish Parashar
-# Last updated: 2017/05/13
+# Last updated: 2017/11/25
+#
 
 # Address to send ads to. This could possibily be removed, but may be useful for debugging purposes?
 destinationIP="0.0.0.0"
@@ -23,71 +24,61 @@ whitelist="${MPDIR}/whitelist"
 # blacklist file: hosts to be added explicitly
 blacklist="${MPDIR}/blacklist"
 
+# dnsmasq domain file: auto download
+mpdomains="${MPDIR}/mpdomains"
+
 if ping -q -c 1 -W 1 google.com >/dev/null; then
 
 	echo "Network up. Generating the hosts file now..."
 
-	echo "01. Mother of All Ad Blocks list"
-	curl -s -A 'Mozilla/5.0 (X11; Linux x86_64; rv:30.0) Gecko/20100101 Firefox/30.0' -e http://forum.xda-developers.com/ http://adblock.mahakala.is/ | grep -v "#" | awk '{print $2}' | sort > $tempoutlist
+	echo "01. StevenBlack list"
+	curl -s -k https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort > $tempoutlist
 
-	echo "02. winhelp2002 ad list"
+	echo "02. notracking list"
+	curl -s -k https://raw.githubusercontent.com/notracking/hosts-blocklists/master/hostnames.txt | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
+	curl -s -k https://raw.githubusercontent.com/notracking/hosts-blocklists/master/domains.txt | grep -v "#" > $mpdomains
+
+	echo "03. Mother of All Ad Blocks list"
+	curl -s -A 'Mozilla/5.0 (X11; Linux x86_64; rv:30.0) Gecko/20100101 Firefox/30.0' -e http://forum.xda-developers.com/ http://adblock.mahakala.is/ | grep -v "#" | awk '{print $2}' | sort >> $tempoutlist
+
+	echo "04. winhelp2002 list"
 	curl -s http://winhelp2002.mvps.org/hosts.txt | grep -v "#" | grep -v "127.0.0.1" | sed '/^$/d' | sed 's/\ /\\ /g' | awk '{print $2}' | sort >> $tempoutlist
 
-	echo "03. adaway ad list"
-	curl -s -k https://adaway.org/hosts.txt | grep -v "#" | grep -v "::1" | sed '/^$/d' | sed 's/\ /\\ /g' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
+	echo "05. Securemecca list"
+	curl -s http://hostsfile.org/Downloads/hosts.txt | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
 
-	echo "04. Yoyo ad list"
+	echo "06. Cameleon list"
+	curl -s http://sysctl.org/cameleon/hosts | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
+
+	echo "07. Yoyo list"
 	curl -s -d mimetype=plaintext -d hostformat=unixhosts http://pgl.yoyo.org/adservers/serverlist.php? | sort >> $tempoutlist
 
-	echo "05. malwaredomains.lehigh.edu list"
+	echo "08. malwaredomains.lehigh.edu list"
 	curl -s http://malwaredomains.lehigh.edu/files/justdomains >> $tempoutlist
 	curl -s http://malwaredomains.lehigh.edu/files/immortal_domains.txt | grep -v "#" >> $tempoutlist
 
-	echo "06. Disconnect.me list"
+	echo "09. Disconnect.me list"
 	curl -s -k https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt | grep -v "#" >> $tempoutlist
 	curl -s -k https://s3.amazonaws.com/lists.disconnect.me/simple_malvertising.txt | grep -v "#" >> $tempoutlist
 	curl -s -k https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt | grep -v "#" >> $tempoutlist
 	curl -s -k https://s3.amazonaws.com/lists.disconnect.me/simple_malware.txt | grep -v "#" >> $tempoutlist
 
-	echo "07. malwaredomainlist ad list"
+	echo "10. malwaredomainlist list"
 	curl -s http://www.malwaredomainlist.com/hostslist/hosts.txt | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | awk '{print $3}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
 
-	echo "08. StevenBlack ad list"
-	curl -s -k https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
-
-	echo "09. abuse.ch ZeuS domain blocklist"
+	echo "11. abuse.ch blocklist"
 	curl -s -k https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist | grep -v "#" >> $tempoutlist
+	curl -s -k https://ransomwaretracker.abuse.ch/downloads/RW_DOMBL.txt | grep -v "#" >> $tempoutlist
 
-	echo "10.1 hosts-file ad/tracking list"
+	echo "12. quidsup/notrack list"
+	curl -s -k https://raw.githubusercontent.com/quidsup/notrack/master/trackers.txt | grep -v "#" >> $tempoutlist
+	curl -s -k https://raw.githubusercontent.com/quidsup/notrack/master/malicious-sites.txt | grep -v "#" >> $tempoutlist
+
+	echo "13. hosts-file ad/tracking list"
 	curl -s -k https://hosts-file.net/ad_servers.txt | grep -v "#" | grep -v "::1" | sed '/^$/d' | sed 's/\ /\\ /g' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
-	#echo "10.2 hosts-file malware list"
-	#curl -s -k https://hosts-file.net/emd.txt | grep -v "#" | grep -v "::1" | sed '/^$/d' | sed 's/\ /\\ /g' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
-	#echo "10.3 hosts-file exploit list"
-	#curl -s -k https://hosts-file.net/exp.txt | grep -v "#" | grep -v "::1" | sed '/^$/d' | sed 's/\ /\\ /g' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
-	#echo "10.4 hosts-file fraud list"
-	#curl -s -k https://hosts-file.net/fsa.txt | grep -v "#" | grep -v "::1" | sed '/^$/d' | sed 's/\ /\\ /g' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
-	#echo "10.5 hosts-file spam list"
-	#curl -s -k https://hosts-file.net/grm.txt | grep -v "#" | grep -v "::1" | sed '/^$/d' | sed 's/\ /\\ /g' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
-	#echo "10.6 hosts-file hijack list"
-	#curl -s -k https://hosts-file.net/hjk.txt | grep -v "#" | grep -v "::1" | sed '/^$/d' | sed 's/\ /\\ /g' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
-	#echo "10.7 hosts-file phishing list"
-	#curl -s -k https://hosts-file.net/psh.txt | grep -v "#" | grep -v "::1" | sed '/^$/d' | sed 's/\ /\\ /g' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
-	#echo "10.8 hosts-file misleading marketing list"
-	#curl -s -k https://hosts-file.net/mmt.txt | grep -v "#" | grep -v "::1" | sed '/^$/d' | sed 's/\ /\\ /g' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
-	#echo "10.9 hosts-file latest partial list"
-	#curl -s -k https://hosts-file.net/hphosts-partial.txt | grep -v "#" | grep -v "::1" | sed '/^$/d' | sed 's/\ /\\ /g' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
-
-	echo "11. someonewhocares ad list"
+	
+	echo "14. someonewhocares list"
 	curl -s http://someonewhocares.org/hosts/hosts | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
-
-	echo "12. hostsfile.mine.nu ad list"
-	curl -s http://hostsfile.mine.nu/Hosts | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
-
-	echo "13. Cameleon ad list"
-	curl -s http://sysctl.org/cameleon/hosts | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
-
-	echo "14. Securemecca list"
-	curl -s http://securemecca.com/Downloads/hosts.txt | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
 
 	echo "15. ADZHOSTS list"
 	curl -s http://pilotfiber.dl.sourceforge.net/project/adzhosts/HOSTS.txt | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
@@ -95,11 +86,18 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 	echo "16. mat1th list"
 	curl -s -k https://raw.githubusercontent.com/mat1th/Dns-add-block/master/hosts | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
 
-	echo "17. notracking list"
-	curl -s -k https://raw.githubusercontent.com/notracking/hosts-blocklists/master/hostnames.txt | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
+	echo "17. adaway list"
+	curl -s -k https://adaway.org/hosts.txt | grep -v "#" | grep -v "::1" | sed '/^$/d' | sed 's/\ /\\ /g' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
 
-	echo "18. quidsup/notrack list"
-	curl -s -k https://raw.githubusercontent.com/quidsup/notrack/master/trackers.txt | grep -v "#" >> $tempoutlist
+	echo "18. Easylist & others"
+	curl -s http://v.firebog.net/hosts/BillStearns.txt | grep -v "#" >> $tempoutlist
+	curl -s http://v.firebog.net/hosts/Kowabit.txt | grep -v "#" >> $tempoutlist
+	curl -s http://v.firebog.net/hosts/Shalla-mal.txt | grep -v "#" >> $tempoutlist
+	curl -s http://v.firebog.net/hosts/Airelle-trc.txt | grep -v "#" >> $tempoutlist
+	curl -s http://v.firebog.net/hosts/AdguardDNS.txt | grep -v "#" >> $tempoutlist
+	curl -s http://v.firebog.net/hosts/Easylist.txt | grep -v "#" >> $tempoutlist
+	curl -s http://www.joewein.net/dl/bl/dom-bl-base.txt | grep -v "#" >> $tempoutlist
+
 
 	# Remove entries from the whitelist file if it exists at the root of the current user's home folder
 	echo "Removing duplicates and formatting the list of domains..."
@@ -127,6 +125,7 @@ fi
 # chmod +x adbhostgen.sh
 
 # Add the hosts file and extra configuration to DD-WRT's dnsmasq config via Services -> Additional DNSMasq Options
+# conf-file=/jffs/dnsmasq/mpdomains
 # addn-hosts=/jffs/dnsmasq/mphosts
 # Never forward plain names (without a dot or domain part)
 # domain-needed
