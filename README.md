@@ -33,7 +33,7 @@ Instructions:
     bogus-priv
     ```
 
-!dnsmasq](https://i.imgur.com/Qn65vV5.png)
+![dnsmasq](https://i.imgur.com/Qn65vV5.png)
 
 7. Under Administration -> Cron, enter this or choose your own schedule: 
 
