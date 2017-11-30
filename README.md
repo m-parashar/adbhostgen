@@ -27,7 +27,8 @@ Instructions:
 
 6. Enter this into the additional options field [rev33] 
 
-    ```conf-file=/jffs/dnsmasq/mpdomains 
+    ```
+    conf-file=/jffs/dnsmasq/mpdomains 
     addn-hosts=/jffs/dnsmasq/mphosts 
     domain-needed 
     bogus-priv
@@ -37,7 +38,8 @@ Instructions:
 
 7. Under Administration -> Cron, enter this or choose your own schedule: 
 
-    ```0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh 
+    ```
+    0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh 
     30 6 * * 1,4 root restart_dns
     ```
 
