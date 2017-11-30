@@ -17,7 +17,7 @@ Instructions:
 
 1. Copy/create adbhostgen.sh / adbhostgensec.sh in /jffs/dnsmasq directory. chmod +x it. 
 
-2. Create/download the file "whitelist" without quotes in /jffs/dnsmasq and populate it with the domains you do not want blocked. ̶E̶n̶s̶u̶r̶e̶ ̶t̶h̶e̶r̶e̶'̶s̶ ̶n̶o̶ ̶t̶r̶a̶i̶l̶i̶n̶g̶ ̶n̶e̶w̶l̶i̶n̶e̶/̶c̶r̶.̶ [rev25] 
+2. Create/download the file "whitelist" without quotes in /jffs/dnsmasq and populate it with the domains you do not want blocked. 
 
 3. Create/download file "blacklist" and populate it with the domains you want to block. [rev30] 
 
