@@ -1,11 +1,12 @@
 #!/bin/sh
+# File: adbhostgen.sh
 # Modified Pi-hole script to generate a MEGA hosts file for DD-WRT (tested on Netgear R8500)
 # for use with dnsmasq's addn-hosts configuration
 # thanks1 : https://gist.github.com/chrisvella/5f3a18f1e442153cd685
 # thanks2 : https://gist.github.com/p-hash/ff8e5b85f3be236010c8cefe8b3e97c0
 #
 # @Manish Parashar
-# Last updated: 2017/11/25
+# Last updated: 2017/11/30
 #
 
 # Address to send ads to. This could possibily be removed, but may be useful for debugging purposes?
@@ -26,6 +27,7 @@ blacklist="${MPDIR}/blacklist"
 
 # dnsmasq domain file: auto download
 mpdomains="${MPDIR}/mpdomains"
+tempmpdlist="$mpdomains.tmp"
 
 if ping -q -c 1 -W 1 google.com >/dev/null; then
 
@@ -36,7 +38,7 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 
 	echo "02. notracking list"
 	curl -s -k https://raw.githubusercontent.com/notracking/hosts-blocklists/master/hostnames.txt | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
-	curl -s -k https://raw.githubusercontent.com/notracking/hosts-blocklists/master/domains.txt | grep -v "#" > $mpdomains
+	curl -s -k https://raw.githubusercontent.com/notracking/hosts-blocklists/master/domains.txt | grep -v "#" > $tempmpdlist
 
 	echo "03. Mother of All Ad Blocks list"
 	curl -s -A 'Mozilla/5.0 (X11; Linux x86_64; rv:30.0) Gecko/20100101 Firefox/30.0' -e http://forum.xda-developers.com/ http://adblock.mahakala.is/ | grep -v "#" | awk '{print $2}' | sort >> $tempoutlist
@@ -109,9 +111,11 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 	sed -r 's/^\s*//; s/\s*$//; /^$/d' $whitelist | sort -u > tmpwl && mv tmpwl $whitelist
 	[ -f "$outlist" ] && cp $outlist $bkplist
 	cat $tempoutlist | sed $'s/\r$//' | cat "$blacklist" - | grep -F -v -f $whitelist | sort -u | sed '/^$/d' | awk -v "IP=$destinationIP" '{sub(/\r$/,""); print IP" "$0}' > $outlist
+	cat $tempmpdlist | grep -F -v -f $whitelist | sort -u  > $mpdomains
 
 	# Removes the temporary list.
 	rm $tempoutlist
+	rm $tempmpdlist
 
 	# Count how many domains/whitelists were added so it can be displayed to the user
 	numberOfAdsBlocked=$(cat $outlist | wc -l | sed 's/^[ \t]*//')
