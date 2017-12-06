@@ -10,20 +10,20 @@ Background: Needed a more elegant and cleaner setup than dealing with the nuance
 
 Solution: hosts file & dnsmasq 
 
-Github: https://github.com/m-parashar/adbhostgen - includes downloadable mpdomains & mphosts. 
+Github: https://github.com/m-parashar/adbhostgen - includes downloadable mpdomains & mphosts, and cacert. 
 Gist: https://gist.github.com/m-parashar/ee38454c27f7a4f4e4ab28249a834ccc 
 
 Instructions: 
 
-1. Copy/create adbhostgen.sh / adbhostgensec.sh in /jffs/dnsmasq directory. chmod +x it. 
+1. Copy/create adbhostgen.sh in /jffs/dnsmasq directory. chmod +x it. 
 
 2. Create/download the file "whitelist" without quotes in /jffs/dnsmasq and populate it with the domains you do not want blocked. 
 
 3. Create/download file "blacklist" and populate it with the domains you want to block. [rev30] 
 
-4. Execute adbhostgen.sh in /jffs/dnsmasq to generate the hosts file. By default the hosts file is quite aggressive and approx 10 MiB in size, which is manageable enough for Netgear R8500. Comment out the hosts repos as you see fit. 
+4. Copy "cacert.pem" [See github link] to /jffs/dnsmasq and run adbhostgen.sh to generate the hosts file. By default the hosts file is quite aggressive and approx 16 MiB in size, which is manageable enough for Netgear R8500. 
 
-5. Enable DNSMasq and local DNS for LAN and WAN 
+5. Enable DNSMasq and local DNS for LAN and WAN
 
 6. Enter this into the additional options field [rev33] 
 
@@ -49,14 +49,15 @@ Instructions:
 
 Should work on R7000, R8000 and other >128MB RAM routers too. Any feedback is welcome. 
 
-SIZE: 
-mpdomains: ~2MiB 
-mphosts: ~14MiB 
+SIZE:
+mpdomains: ~2 MiB
+mphosts: ~16 MiB
+BLITZ=0 mphosts: ~6 MiB
 
 Status: 
 
-![cpumem](https://i.imgur.com/qB1VL21.png)
+![cpumem](https://i.imgur.com/pTacGHS.png)
 
 ![sysstat](https://i.imgur.com/yNSKuuj.png)
 
-UPDATE: added a secure version of the script which downloads cURL CA cert directly from the author's server and then uses secure transmission for downloading lists.
+[rev37]: introduced BLITZ mode switch to turn the more aggressive lists on or off. BLITZ=1 is the default. Updated installation instructions.
