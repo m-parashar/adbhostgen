@@ -19,13 +19,13 @@ Instructions:
 
 2. Create/download the file "whitelist" without quotes in /jffs/dnsmasq and populate it with the domains you do not want blocked. 
 
-3. Create/download file "blacklist" and populate it with the domains you want to block. [rev30] 
+3. Create/download file "blacklist" and populate it with the domains you want to block.
 
 4. Copy "cacert.pem" [See github link] to /jffs/dnsmasq and run adbhostgen.sh to generate the hosts file. By default the hosts file is quite aggressive and approx 16 MiB in size, which is manageable enough for Netgear R8500. 
 
 5. Enable DNSMasq and local DNS for LAN and WAN
 
-6. Enter this into the additional options field [rev33] 
+6. Enter this into the additional options field
 
     ```
     conf-file=/jffs/dnsmasq/mpdomains 
@@ -51,8 +51,7 @@ Should work on R7000, R8000 and other >128MB RAM routers too. Any feedback is we
 
 SIZE:
 mpdomains: ~2 MiB
-mphosts: ~16 MiB
-BLITZ=0 mphosts: ~6 MiB
+BLITZ=0 mphosts: ~14 MiB
 
 Status: 
 
@@ -60,4 +59,4 @@ Status:
 
 ![sysstat](https://i.imgur.com/yNSKuuj.png)
 
-[rev37]: introduced BLITZ mode switch to turn the more aggressive lists on or off. BLITZ=1 is the default. Updated installation instructions.
+
