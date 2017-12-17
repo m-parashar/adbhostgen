@@ -21,7 +21,7 @@ Instructions:
 
 3. Create/download file "blacklist" and populate it with the domains you want to block.
 
-4. Copy "cacert.pem" [See github link] to /jffs/dnsmasq and run adbhostgen.sh to generate the hosts file. By default the hosts file is quite aggressive and approx 16 MiB in size, which is manageable enough for Netgear R8500. 
+4. Copy "cacert.pem" to /jffs/dnsmasq and run adbhostgen.sh to generate the hosts file. By default the hosts file is quite aggressive and approx 16 MiB in size, which is manageable enough for Netgear R8500. 
 
 5. Enable DNSMasq and local DNS for LAN and WAN
 
