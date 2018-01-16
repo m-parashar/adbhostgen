@@ -6,6 +6,9 @@ Firmware: DD-WRT v3.0-r33770M kongac (11/15/17)
 
 Additional configuration: OpenVPN client and an 8 GiB pendrive partitioned and formatted as swap, /jffs, and /opt running Kong's optware. 
 
+![jffs](https://i.imgur.com/bDJBxd8.png)
+![usb](https://i.imgur.com/3c5kkTM.png)
+
 Background: Needed a more elegant and cleaner setup than dealing with the nuances of OpenVPN and Privoxy enabled on the same router. Repurposing RPi3 had something to do with it, too. 
 
 Solution: hosts file & dnsmasq 
