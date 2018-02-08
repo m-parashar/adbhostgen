@@ -4,22 +4,27 @@
 # for use with dnsmasq's addn-hosts configuration
 # https://github.com/m-parashar/adbhostgen
 # https://gist.github.com/m-parashar/ee38454c27f7a4f4e4ab28249a834ccc
+# https://www.dd-wrt.com/phpBB2/viewtopic.php?t=307533
 #
 # thanks1 : https://gist.github.com/chrisvella/5f3a18f1e442153cd685
 # thanks2 : https://gist.github.com/p-hash/ff8e5b85f3be236010c8cefe8b3e97c0
+# thanks3 : Arthur Borsboom https://github.com/arthurborsboom
 #
 # @Manish Parashar
-# Last updated: 2017/12/18
+# Last updated: 2018/02/08
+
+VERSION="20180208"
 
 # Address to send ads to. This could possibily be removed, but may be useful for debugging purposes?
 destinationIP="0.0.0.0"
 
 # Define dnsmasq directory and path. Required for cron.
 MPDIR='/jffs/dnsmasq'
+TMPDIR='/tmp'
 
 outlist="${MPDIR}/mphosts"
-bkplist="${MPDIR}/mphosts.1"
-tempoutlist="$outlist.tmp"
+#bkplist="${MPDIR}/mphosts.1"
+tempoutlist="${TMPDIR}/outlist.tmp"
 
 # whitelist file: a list of whitelisted domains one per line
 whitelist="${MPDIR}/whitelist"
@@ -29,17 +34,43 @@ blacklist="${MPDIR}/blacklist"
 
 # dnsmasq domain file: auto download
 mpdomains="${MPDIR}/mpdomains"
-tempmpdlist="$mpdomains.tmp"
+tempmpdlist="${TMPDIR}/mpdomains.tmp"
 
 # define aggressiveness: [ 0 | 1 ]
 BLITZ=0
+
+if [ "$SELF_LOGGING" != "1" ]; then
+    # The parent process will enter this branch and set up logging
+
+    # Create a named piped for logging the child's output
+    PIPE=tmp.fifo
+    mkfifo $PIPE
+
+    # Launch the child process without redirected to the named pipe
+    SELF_LOGGING=1 sh $0 $* >$PIPE &
+
+    # Save PID of child process
+    PID=$!
+
+    # Launch tee in a separate process
+    tee ${MPDIR}/mphosts.log <$PIPE &
+
+    # Unlink $PIPE because the parent process no longer needs it
+    rm $PIPE    
+
+    # Wait for child process running the rest of this script
+    wait $PID
+
+    # Return the error code from the child process
+    exit $?
+fi
 
 if ping -q -c 1 -W 1 google.com >/dev/null; then
 
 	echo "Network up. Generating the hosts file now..."
 
 	if [ ! -e cacert.pem ] || [ $(date +%A) = "Monday" ]; then
-		echo "Downloading cURL cacert for secure communication."
+		echo "Downloading / updating cURL cacert for secure communication."
 		curl -s --cacert cacert.pem --remote-name --time-cond cacert.pem https://curl.haxx.se/ca/cacert.pem || curl -s -k --remote-name --time-cond cacert.pem https://curl.haxx.se/ca/cacert.pem
 	fi
 
@@ -132,17 +163,20 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 	echo "Removing duplicates and formatting the list of domains..."
 	sed -r 's/^\s*//; s/\s*$//; /^$/d' $blacklist | sort -u > tmpch && mv tmpch $blacklist
 	sed -r 's/^\s*//; s/\s*$//; /^$/d' $whitelist | sort -u > tmpwl && mv tmpwl $whitelist
-	[ -f "$outlist" ] && cp $outlist $bkplist
+	#[ -f "$outlist" ] && cp $outlist $bkplist
 	cat $tempoutlist | sed $'s/\r$//' | cat "$blacklist" - | grep -F -v -f $whitelist | sort -u | sed '/^$/d' | awk -v "IP=$destinationIP" '{sub(/\r$/,""); print IP" "$0}' > $outlist
 	cat $tempmpdlist | grep -F -v -f $whitelist | sort -u  > $mpdomains
 
-	# Removes the temporary list.
+	echo "Removing temporary lists..."
 	rm $tempoutlist
 	rm $tempmpdlist
 
 	# Count how many domains/whitelists were added so it can be displayed to the user
 	numberOfAdsBlocked=$(cat $outlist | wc -l | sed 's/^[ \t]*//')
 	echo "$numberOfAdsBlocked ad domains blocked."
+
+	echo "Restarting DNS server (dnsmasq)..."
+	restart_dns
 
 else
 	echo "Network is down. Aborting."
@@ -168,13 +202,3 @@ fi
 # Go to Administration -> Cron (Sets the script to update itself. Choose your own schedule.)
 # Build the mphosts file on MON and THU at 6AM
 # 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
-
-# Add another custom command:
-# 30 6 * * 1,4 root restart_dns
-# ~OR~
-# stopservice dnsmasq; startservice dnsmasq
-# ~OR~
-# killall -1 dnsmasq
-# ~OR~
-# Have the router reboot sometime after the script has been downloaded.
-

@@ -1,0 +1,17 @@
+Network up. Generating the hosts file now...
+BLITZ mode OFF.
+StevenBlack list
+notracking list
+Cameleon list
+hosts-file ad/tracking list
+Disconnect.me list
+quidsup/notrack list
+MalwareDomains list
+malwaredomainlist list
+abuse.ch blocklist
+adaway list
+Easylist & others
+Removing duplicates and formatting the list of domains...
+Removing temporary lists...
+319160 ad domains blocked.
+Restarting DNS server (dnsmasq)...
