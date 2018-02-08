@@ -14,7 +14,9 @@ Additional configuration: Preferably a USB pendrive partitioned and formatted as
 Solution: hosts file & dnsmasq
 
 7z download link: https://github.com/m-parashar/adbhostgen/blob/master/adbhostgen.7z?raw=true
+
 Github: https://github.com/m-parashar/adbhostgen - includes downloadable mpdomains & mphosts, and cacert.
+
 Gist: https://gist.github.com/m-parashar/ee38454c27f7a4f4e4ab28249a834ccc
 
 Instructions: 
