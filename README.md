@@ -1,65 +1,65 @@
-# Ad-blocking on Netgear R8500 
+# Ad-blocking on DD-WRT
 
-System: Netgear R8500 
+VERSION: 20180208 [YYYYMMDD]
 
-Firmware: DD-WRT v3.0-r33770M kongac (11/15/17) 
+System: Netgear R8500
 
-Additional configuration: OpenVPN client and an 8 GiB pendrive partitioned and formatted as swap, /jffs, and /opt running Kong's optware. 
+Firmware: DD-WRT v3.0-r34790M kongac ( 02/04/18 )
+
+Additional configuration:Preferably a USB pendrive partitioned and formatted as swap and /jffs.
 
 ![jffs](https://i.imgur.com/bDJBxd8.png)
 ![usb](https://i.imgur.com/3c5kkTM.png)
 
-Background: Needed a more elegant and cleaner setup than dealing with the nuances of OpenVPN and Privoxy enabled on the same router. Repurposing RPi3 had something to do with it, too. 
+Solution: hosts file & dnsmasq
 
-Solution: hosts file & dnsmasq 
-
-Github: https://github.com/m-parashar/adbhostgen - includes downloadable mpdomains & mphosts, and cacert. 
-Gist: https://gist.github.com/m-parashar/ee38454c27f7a4f4e4ab28249a834ccc 
+7z download link: https://github.com/m-parashar/adbhostgen/blob/master/adbhostgen.7z?raw=true
+Github: https://github.com/m-parashar/adbhostgen - includes downloadable mpdomains & mphosts, and cacert.
+Gist: https://gist.github.com/m-parashar/ee38454c27f7a4f4e4ab28249a834ccc
 
 Instructions: 
 
-1. Copy/create adbhostgen.sh in /jffs/dnsmasq directory. chmod +x it. 
+1. Copy adbhostgen.sh to /jffs/dnsmasq directory. chmod +x it.
 
-2. Create/download the file "whitelist" without quotes in /jffs/dnsmasq and populate it with the domains you do not want blocked. 
+2. OPTIONAL: Edit adbhostgen.sh to set BLITZ mode to 1, if you want an aggressive hosts file. By default BLITZ is set to 0.
 
-3. Create/download file "blacklist" and populate it with the domains you want to block.
+3. Copy file "whitelist" to /jffs/dnsmasq and add the domains you do not want blocked.
 
-4. Copy "cacert.pem" to /jffs/dnsmasq and run adbhostgen.sh to generate the hosts file. By default the hosts file is quite aggressive and approx 16 MiB in size, which is manageable enough for Netgear R8500. 
+4. Copy file "blacklist" to /jffs/dnsmasq and add the domains you want blocked.
 
-5. Enable DNSMasq and local DNS for LAN and WAN
+5. Copy "cacert.pem" [See github link] to /jffs/dnsmasq.
 
-6. Enter this into the additional options field
+6. Enable DNSMasq and local DNS for LAN and WAN
+
+7. Enter this into the additional options field
 
     ```
-    conf-file=/jffs/dnsmasq/mpdomains 
-    addn-hosts=/jffs/dnsmasq/mphosts 
-    domain-needed 
+    conf-file=/jffs/dnsmasq/mpdomains
+    addn-hosts=/jffs/dnsmasq/mphosts
+    domain-needed
     bogus-priv
     ```
 
 ![dnsmasq](https://i.imgur.com/Qn65vV5.png)
 
-7. Under Administration -> Cron, enter this or choose your own schedule: 
+8. Under Administration -> Cron, enter this or choose your own schedule: 
 
     ```
-    0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh 
-    30 6 * * 1,4 root restart_dns
+    0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
     ```
 
-![cron](http://i.imgur.com/c98Hd9u.png)
+![cron](https://i.imgur.com/Y7RAEVk.png)
 
-8. Reboot 
+9. Reboot 
 
 Should work on R7000, R8000 and other >128MB RAM routers too. Any feedback is welcome. 
 
 SIZE:
 mpdomains: ~2 MiB
-BLITZ=0 mphosts: ~14 MiB
+BLITZ=0 mphosts: ~9 MiB
 
 Status: 
 
-![cpumem](https://i.imgur.com/pTacGHS.png)
+![log](https://i.imgur.com/m09FnW4.png)
 
 ![sysstat](https://i.imgur.com/yNSKuuj.png)
-
-
