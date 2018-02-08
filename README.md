@@ -6,7 +6,7 @@ System: Netgear R8500
 
 Firmware: DD-WRT v3.0-r34790M kongac ( 02/04/18 )
 
-Additional configuration:Preferably a USB pendrive partitioned and formatted as swap and /jffs.
+Additional configuration: Preferably a USB pendrive partitioned and formatted as swap and /jffs.
 
 ![jffs](https://i.imgur.com/bDJBxd8.png)
 ![usb](https://i.imgur.com/3c5kkTM.png)
