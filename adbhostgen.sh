@@ -1,7 +1,9 @@
 #!/bin/sh
 # File: adbhostgen.sh
+#
 # Script to generate a MEGA hosts file for DD-WRT
 # for use with dnsmasq's addn-hosts configuration
+#
 # https://github.com/m-parashar/adbhostgen
 # https://gist.github.com/m-parashar/ee38454c27f7a4f4e4ab28249a834ccc
 # https://www.dd-wrt.com/phpBB2/viewtopic.php?t=307533
@@ -11,9 +13,9 @@
 # thanks3 : Arthur Borsboom https://github.com/arthurborsboom
 #
 # @Manish Parashar
-# Last updated: 2018/02/08
+# Last updated: 2018/02/09
 
-VERSION="20180208"
+VERSION="20180209"
 
 # Address to send ads to. This could possibily be removed, but may be useful for debugging purposes?
 destinationIP="0.0.0.0"
@@ -82,16 +84,21 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 	fi
 
 	echo "StevenBlack list"
-	curl -s --cacert cacert.pem https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort > $tempoutlist
+	curl -s --cacert cacert.pem https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort > $tempoutlist
+	curl -s --cacert cacert.pem https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
+	curl -s --cacert cacert.pem https://raw.githubusercontent.com/StevenBlack/hosts/master/data/tyzbit/hosts | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
+	curl -s --cacert cacert.pem https://raw.githubusercontent.com/StevenBlack/hosts/master/data/add.2o7Net/hosts | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
+	curl -s --cacert cacert.pem https://raw.githubusercontent.com/StevenBlack/hosts/master/data/SpotifyAds/hosts | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
+	curl -s --cacert cacert.pem https://raw.githubusercontent.com/oznu/dns-zone-blacklist/master/dnsmasq/dnsmasq.blacklist | grep -v "#" > $tempmpdlist
 
 	echo "notracking list"
 	curl -s --cacert cacert.pem https://raw.githubusercontent.com/notracking/hosts-blocklists/master/hostnames.txt | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
-	curl -s --cacert cacert.pem https://raw.githubusercontent.com/notracking/hosts-blocklists/master/domains.txt | grep -v "#" > $tempmpdlist
+	curl -s --cacert cacert.pem https://raw.githubusercontent.com/notracking/hosts-blocklists/master/domains.txt | grep -v "#" >> $tempmpdlist
 
 	echo "Cameleon list"
 	curl -s http://sysctl.org/cameleon/hosts | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
 
-	echo "hosts-file ad/tracking list"
+	echo "hosts-file ad_servers list"
 	curl -s --cacert cacert.pem https://hosts-file.net/ad_servers.txt | grep -v "#" | grep -v "::1" | sed '/^$/d' | sed 's/\ /\\ /g' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
 
 	echo "Disconnect.me list"
@@ -108,8 +115,8 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 	curl -s --cacert cacert.pem https://mirror1.malwaredomains.com/files/justdomains >> $tempoutlist
 	curl -s --cacert cacert.pem https://mirror1.malwaredomains.com/files/immortal_domains.txt | grep -v "#" >> $tempoutlist
 
-	echo "malwaredomainlist list"
-	curl -s --cacert cacert.pem https://www.malwaredomainlist.com/hostslist/hosts.txt | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | awk '{print $3}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
+	echo "Securemecca list"
+	curl -s --cacert cacert.pem https://hostsfile.org/Downloads/hosts.txt | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
 
 	echo "abuse.ch blocklist"
 	curl -s --cacert cacert.pem https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist | grep -v "#" >> $tempoutlist
@@ -119,23 +126,32 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 	curl -s --cacert cacert.pem https://adaway.org/hosts.txt | grep -v "#" | grep -v "::1" | sed '/^$/d' | sed 's/\ /\\ /g' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
 
 	echo "Easylist & others"
-	curl -s --cacert cacert.pem https://v.firebog.net/hosts/Easylist.txt | grep -v "#" >> $tempoutlist
 	curl -s --cacert cacert.pem https://v.firebog.net/hosts/AdguardDNS.txt | grep -v "#" >> $tempoutlist
-	curl -s --cacert cacert.pem https://v.firebog.net/hosts/BillStearns.txt | grep -v "#" >> $tempoutlist
-	curl -s --cacert cacert.pem https://v.firebog.net/hosts/static/w3kbl.txt | grep -v "#" >> $tempoutlist
-	curl -s --cacert cacert.pem https://v.firebog.net/hosts/Airelle-trc.txt | grep -v "#" >> $tempoutlist
 	curl -s --cacert cacert.pem https://v.firebog.net/hosts/Airelle-hrsk.txt | grep -v "#" >> $tempoutlist
-	curl -s --cacert cacert.pem https://v.firebog.net/hosts/Shalla-mal.txt | grep -v "#" >> $tempoutlist
+	curl -s --cacert cacert.pem https://v.firebog.net/hosts/Airelle-trc.txt | grep -v "#" >> $tempoutlist
+	curl -s --cacert cacert.pem https://v.firebog.net/hosts/BillStearns.txt | grep -v "#" >> $tempoutlist
+	curl -s --cacert cacert.pem https://v.firebog.net/hosts/Easylist.txt | grep -v "#" >> $tempoutlist
 	curl -s --cacert cacert.pem https://v.firebog.net/hosts/Easyprivacy.txt | grep -v "#" >> $tempoutlist
+	curl -s --cacert cacert.pem https://v.firebog.net/hosts/Kowabit.txt | grep -v "#" >> $tempoutlist
 	curl -s --cacert cacert.pem https://v.firebog.net/hosts/Prigent-Ads.txt | grep -v "#" >> $tempoutlist
 	curl -s --cacert cacert.pem https://v.firebog.net/hosts/Prigent-Malware.txt | grep -v "#" >> $tempoutlist
 	curl -s --cacert cacert.pem https://v.firebog.net/hosts/Prigent-Phishing.txt | grep -v "#" >> $tempoutlist
-	curl -s --cacert cacert.pem https://www.joewein.net/dl/bl/dom-bl-base.txt | grep -v "#" >> $tempoutlist
-	curl -s --cacert cacert.pem https://raw.githubusercontent.com/piwik/referrer-spam-blacklist/master/spammers.txt | grep -v "#" >> $tempoutlist
+	curl -s --cacert cacert.pem https://v.firebog.net/hosts/Shalla-mal.txt | grep -v "#" >> $tempoutlist
+	curl -s --cacert cacert.pem https://v.firebog.net/hosts/static/SamsungSmart.txt | grep -v "#" >> $tempoutlist
+	curl -s --cacert cacert.pem https://v.firebog.net/hosts/static/w3kbl.txt | grep -v "#" >> $tempoutlist
+	curl -s --cacert cacert.pem https://www.dshield.org/feeds/suspiciousdomains_High.txt | grep -v "#" >> $tempoutlist
 	curl -s --cacert cacert.pem https://www.dshield.org/feeds/suspiciousdomains_Low.txt | grep -v "#" >> $tempoutlist
-	curl -s --cacert cacert.pem https://ransomwaretracker.abuse.ch/downloads/RW_DOMBL.txt | grep -v "#" >> $tempoutlist
+	curl -s --cacert cacert.pem https://www.dshield.org/feeds/suspiciousdomains_Medium.txt | grep -v "#" >> $tempoutlist
+	curl -s --cacert cacert.pem https://raw.githubusercontent.com/anudeepND/blacklist/master/adservers.txt | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
+	curl -s --cacert cacert.pem https://raw.githubusercontent.com/anudeepND/blacklist/master/CoinMiner.txt | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
+	curl -s --cacert cacert.pem https://raw.githubusercontent.com/anudeepND/youtubeadsblacklist/master/domainlist.txt | grep -v "#" >> $tempoutlist
+	curl -s --cacert cacert.pem https://raw.githubusercontent.com/ZeroDot1/CoinBlockerLists/master/hosts | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
+	curl -s --cacert cacert.pem https://raw.githubusercontent.com/tyzbit/hosts/master/data/tyzbit/hosts | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
+	curl -s --cacert cacert.pem https://raw.githubusercontent.com/mitchellkrogza/Badd-Boyz-Hosts/master/hosts | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
+	curl -s --cacert cacert.pem https://raw.githubusercontent.com/piwik/referrer-spam-blacklist/master/spammers.txt | grep -v "#" >> $tempoutlist
+	curl -s --cacert cacert.pem https://raw.githubusercontent.com/crazy-max/WindowsSpyBlocker/master/data/hosts/win10/spy.txt | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
 	curl -s --cacert cacert.pem https://raw.githubusercontent.com/chadmayfield/my-pihole-blocklists/master/lists/pi_blocklist_porn_top1m.list | grep -v "#" >> $tempoutlist
-
+	
 	if [ $BLITZ -eq 1 ]; then
 		echo "winhelp2002 list"
 		curl -s http://winhelp2002.mvps.org/hosts.txt | grep -v "#" | grep -v "127.0.0.1" | sed '/^$/d' | sed 's/\ /\\ /g' | awk '{print $2}' | sort >> $tempoutlist
@@ -143,14 +159,14 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 		echo "Yoyo list"
 		curl -s --cacert cacert.pem -d mimetype=plaintext -d hostformat=unixhosts https://pgl.yoyo.org/adservers/serverlist.php? | sort >> $tempoutlist
 
-		echo "Securemecca list"
-		curl -s --cacert cacert.pem https://hostsfile.org/Downloads/hosts.txt | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
+		echo "HostsFile.mine.nu list"
+		curl -s --cacert cacert.pem https://hostsfile.mine.nu/hosts0.txt | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
 
 		echo "Mother of All Ad Blocks list"
 		curl -s --cacert cacert.pem -A 'Mozilla/5.0 (X11; Linux x86_64; rv:30.0) Gecko/20100101 Firefox/30.0' -e http://forum.xda-developers.com/ https://adblock.mahakala.is/ | grep -v "#" | awk '{print $2}' | sort >> $tempoutlist
 
 		echo "someonewhocares list"
-		curl -s http://someonewhocares.org/hosts/hosts | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
+		curl -s http://someonewhocares.org/hosts/zero/hosts | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
 
 		echo "ADZHOSTS list"
 		curl -s --cacert cacert.pem https://pilotfiber.dl.sourceforge.net/project/adzhosts/HOSTS.txt | grep -v "#" | sed '/^$/d' | sed 's/\ /\\ /g' | grep -v '^\\' | grep -v '\\$' | awk '{print $2}' | grep -v '^\\' | grep -v '\\$' | sort >> $tempoutlist
