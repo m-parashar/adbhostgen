@@ -1,10 +1,10 @@
 # Ad-blocking on DD-WRT
 
-VERSION: 20180208 [YYYYMMDD]
+VERSION: 20180209 [YYYYMMDD]
 
 System: Netgear R8500
 
-Firmware: DD-WRT v3.0-r34790M kongac ( 02/04/18 )
+Firmware: DD-WRT v3.0-r34800M kongac (02/07/18)
 
 Additional configuration: Preferably a USB pendrive partitioned and formatted as swap and /jffs.
 
