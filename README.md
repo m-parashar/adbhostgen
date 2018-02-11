@@ -43,7 +43,6 @@ Enter additional options for dnsmasq if required, for example:
 
     ```
     domain-needed
-    
     bogus-priv
     ```
     
