@@ -41,11 +41,10 @@ Instructions:
     ```
 Enter additional options for dnsmasq if required, for example:
 
-    ```
     domain-needed
     bogus-priv
-    ```
-    
+
+
 ![dnsmasq](https://i.imgur.com/ez7yLM4.png)
 
 8. Under Administration -> Cron, enter this or choose your own schedule: 
