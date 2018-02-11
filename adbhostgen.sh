@@ -13,9 +13,9 @@
 # thanks3 : Arthur Borsboom https://github.com/arthurborsboom
 #
 # @Manish Parashar
-# Last updated: 2018/02/09
+# Last updated: 2018/02/11
 
-VERSION="20180209"
+VERSION="20180211"
 
 # Address to send ads to. This could possibily be removed, but may be useful for debugging purposes?
 destinationIP="0.0.0.0"
@@ -204,16 +204,12 @@ fi
 # Add the hosts file and extra configuration to DD-WRT's dnsmasq config via Services -> Additional DNSMasq Options
 # conf-file=/jffs/dnsmasq/mpdomains
 # addn-hosts=/jffs/dnsmasq/mphosts
+#
+# optional:
 # Never forward plain names (without a dot or domain part)
 # domain-needed
 # Never forward addresses in the non-routed address spaces.
 # bogus-priv
-
-# For debugging purposes, log each DNS query as it passes through dnsmasq. Remove this once you have confirmed it is working.
-# log-queries
-# log-facility=/jffs/dnsmasq/adblocking.log
-# This allows it to continue functioning without being blocked by syslog, and allows syslog to use dnsmasq for DNS queries without risking deadlock
-# log-async
 
 # Go to Administration -> Cron (Sets the script to update itself. Choose your own schedule.)
 # Build the mphosts file on MON and THU at 6AM
