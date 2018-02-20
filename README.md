@@ -9,6 +9,9 @@ Firmware: DD-WRT v3.0-r34800M kongac (02/07/18)
 Additional configuration: Preferably a USB pendrive partitioned and formatted as swap and /jffs.
 
 ![jffs](https://i.imgur.com/bDJBxd8.png)
+
+Disable internal flash if you have a pendrive for /jffs.
+
 ![usb](https://i.imgur.com/3c5kkTM.png)
 
 Solution: hosts file & dnsmasq
