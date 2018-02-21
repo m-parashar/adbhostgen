@@ -40,14 +40,15 @@ selfUpdate ()
 #!/bin/sh
 # Overwrite old file with new
 if mv $NEW_VERSION $SELF; then
-	echo "Updating script to the latest version."
+	echo "$SELF updated to version $VERSION."
 else
 	echo "Self-update failed."
 fi
 EOF
 
-echo -n "Inserting update process..."
+echo -n "Self-updating to the latest version."
 exec /bin/sh updateScript.sh
+exit 0
 }
 
 # Address to send ads to. This could possibily be removed, but may be useful for debugging purposes?
