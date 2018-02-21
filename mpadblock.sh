@@ -39,7 +39,7 @@ selfUpdate ()
 		exec $SELF $ARGS
         exit 0
     else
-        rm "$UPDATED_VER"
+        rm -f "$UPDATED_VER"
 	fi
 }
 
