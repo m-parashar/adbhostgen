@@ -36,6 +36,7 @@ selfUpdate ()
 		chmod 755 "$UPDATED_VER"
 		mv "$UPDATED_VER" "$SELF"
 		exec $SELF $ARGS
+        exit 0
 	fi
 	echo "$(basename $0) version: $VERSION."
 }
