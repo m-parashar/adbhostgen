@@ -46,6 +46,7 @@ EOF
 echo "Self-updating to the latest version."
 /bin/sh updateScript.sh
 exec $SELF $ARGS
+exit 0
 }
 
 selfUpdate
