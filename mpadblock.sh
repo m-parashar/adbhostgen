@@ -77,7 +77,7 @@ tempmpdlist="${TMPDIR}/mpdomains.tmp"
 BLITZ=0
 
 main ()
-{	
+{
 if [ "$SELF_LOGGING" != "1" ]; then
     # The parent process will enter this branch and set up logging
 
