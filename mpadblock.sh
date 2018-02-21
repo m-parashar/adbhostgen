@@ -31,15 +31,15 @@ selfUpdate ()
 	new_md5=`md5sum $UPDATED_VER | cut -d' ' -f1`
 
 	if [ "$old_md5" != "$new_md5" ]; then
-        echo "$(basename $0) version: $VERSION."
+		echo "$(basename $0) version: $VERSION."
 		echo "New version available."
 		echo "Self-updating to the latest version."
 		chmod 755 "$UPDATED_VER"
 		mv "$UPDATED_VER" "$SELF"
 		exec $SELF $ARGS
-        exit 0
-    else
-        rm -f "$UPDATED_VER"
+		exit 0
+	else
+		rm -f "$UPDATED_VER"
 	fi
 }
 
