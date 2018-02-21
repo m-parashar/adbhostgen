@@ -17,38 +17,39 @@
 
 VERSION="20180221"
 
-SCRIPT_NAME="$0"
+SELF="$0"
 ARGS="$@"
-NEW_FILE="/tmp/mpadblock.sh"
+NEW_VERSION="/tmp/mpadblock.sh"
 
-check_upgrade ()
+set -o errexit
+
+selfUpdate ()
 {
 	if ping -q -c 1 -W 1 google.com >/dev/null; then
-		curl -s --cacert cacert.pem https://raw.githubusercontent.com/m-parashar/adbhostgen/master/mpadblock.sh > $NEW_FILE
+		curl -s --cacert cacert.pem https://raw.githubusercontent.com/m-parashar/adbhostgen/master/mpadblock.sh > $NEW_VERSION
 	fi
 
-  # check if there is a new version of this file
-  # here, hypothetically we check if a file exists in the disk.
-  # it could be an apt/yum check or whatever...
-  [ -f "$NEW_FILE" ] && {
+  	  # Copy over modes from old version
+  	  OCTAL_MODE=$(stat -c '%a' $SELF)
+  	  if ! chmod $OCTAL_MODE $NEW_VERSION ; then
+  	  	echo "Self-update failed."
+  	  	exit 1
+  	  fi
 
-    # install a new version of this file or package
-    # again, in this example, this is done by just copying the new file
-    echo "Updating script to the latest version."
-    mv "$NEW_FILE" "$SCRIPT_NAME"
-    chmod +x "$SCRIPT_NAME"
-    rm -f "$NEW_FILE"
+  # Spawn update script
+  cat > updateScript.sh << EOF
+#!/bin/sh
+# Overwrite old file with new
+if mv $NEW_VERSION $SELF; then
+	echo "Updating script to the latest version."
+	rm $NEW_VERSION
+else
+	echo "Self-update failed."
+fi
+EOF
 
-    # note that at this point this file was overwritten in the disk
-    # now run this very own file, in its new version!
-    echo "Updated version: $VERSION"
-    $SCRIPT_NAME $ARGS
-
-    # now exit this old instance
-    exit 0
-}
-
-echo "Current version: $VERSION"
+echo -n "Inserting update process..."
+exec /bin/sh updateScript.sh
 }
 
 # Address to send ads to. This could possibily be removed, but may be useful for debugging purposes?
@@ -76,10 +77,8 @@ tempmpdlist="${TMPDIR}/mpdomains.tmp"
 BLITZ=0
 
 main ()
-{
-	check_upgrade
-	
-	if [ "$SELF_LOGGING" != "1" ]; then
+{	
+if [ "$SELF_LOGGING" != "1" ]; then
     # The parent process will enter this branch and set up logging
 
     # Create a named piped for logging the child's output
@@ -243,6 +242,7 @@ else
 fi
 }
 
+selfUpdate
 main
 
 # Give the script permissions to execute:
