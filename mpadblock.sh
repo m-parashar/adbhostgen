@@ -228,7 +228,6 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 else
 	echo "Network is down. Aborting."
 fi
-}
 
 # Give the script permissions to execute:
 # chmod +x mpadblock.sh
