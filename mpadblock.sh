@@ -17,7 +17,7 @@
 
 VERSION="20180221"
 
-SELF=$(basename $0)
+SELF="$0"
 ARGS="$@"
 NEW_VERSION="/tmp/mpadblock.sh"
 
@@ -37,7 +37,7 @@ selfUpdate ()
 #!/bin/sh
 # Overwrite old file with new
 if mv $NEW_VERSION $SELF; then
-	echo "$SELF updated to version $VERSION."
+	echo "$(basename $0) updated to version $VERSION."
 else
 	echo "Self-update failed."
 fi
