@@ -43,9 +43,12 @@ else
 fi
 EOF
 
-#echo "Self-updating to the latest version."
-#/bin/sh updateScript.sh &
+echo "Self-updating to the latest version."
+/bin/sh updateScript.sh
+exec $SELF $ARGS
 }
+
+selfUpdate
 
 # Address to send ads to. This could possibily be removed, but may be useful for debugging purposes?
 destinationIP="0.0.0.0"
