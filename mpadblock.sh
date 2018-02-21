@@ -76,6 +76,8 @@ BLITZ=0
 
 main ()
 {
+	check_upgrade
+	
 	if [ "$SELF_LOGGING" != "1" ]; then
     # The parent process will enter this branch and set up logging
 
@@ -239,9 +241,6 @@ else
 	echo "Network is down. Aborting."
 fi
 }
-
-check_upgrade
-main
 
 # Give the script permissions to execute:
 # chmod +x mpadblock.sh
