@@ -38,6 +38,8 @@ selfUpdate ()
 		mv "$UPDATED_VER" "$SELF"
 		exec $SELF $ARGS
         exit 0
+    else
+        rm "$UPDATED_VER"
 	fi
 }
 
