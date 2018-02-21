@@ -19,35 +19,28 @@ VERSION="20180221"
 
 SELF="$0"
 ARGS="$@"
-NEW_VERSION="/tmp/mpadblock.sh"
+UPDATED_VER="/tmp/mpadblock.sh"
 
 selfUpdate ()
 {
 	if ping -q -c 1 -W 1 google.com >/dev/null; then
-		curl -s --cacert cacert.pem https://raw.githubusercontent.com/m-parashar/adbhostgen/master/mpadblock.sh > $NEW_VERSION
+		curl -s --cacert cacert.pem https://raw.githubusercontent.com/m-parashar/adbhostgen/master/mpadblock.sh > $UPDATED_VER
 	fi
 
-	if ! chmod 755 $NEW_VERSION ; then
-		echo "Self-update failed."
-		exit 1
-	fi
+	[ -f "$UPDATED_VER" ] && {
+		echo "Self-updating to the latest version."
+		chmod 755 "$UPDATED_VER"
+		cp "$UPDATED_VER" "$SELF"
+		rm -f "$UPDATED_VER"
 
-  # Spawn update script
-  cat > updateScript.sh << EOF
-#!/bin/sh
-# Overwrite old file with new
-if mv $NEW_VERSION $SELF; then
+		$SELF $ARGS
+		exit 0
+	}
 	echo "$(basename $0) updated to version $VERSION."
-else
-	echo "Self-update failed."
-fi
-EOF
-
-echo "Self-updating to the latest version."
-/bin/sh updateScript.sh
 }
 
-selfUpdate
+main ()
+{
 
 # Address to send ads to. This could possibily be removed, but may be useful for debugging purposes?
 destinationIP="0.0.0.0"
@@ -235,6 +228,10 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 else
 	echo "Network is down. Aborting."
 fi
+}
+
+selfUpdate
+main
 
 # Give the script permissions to execute:
 # chmod +x mpadblock.sh
