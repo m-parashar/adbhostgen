@@ -243,6 +243,8 @@ else
 fi
 }
 
+main
+
 # Give the script permissions to execute:
 # chmod +x mpadblock.sh
 
