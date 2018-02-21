@@ -35,7 +35,7 @@ check_upgrade ()
     # install a new version of this file or package
     # again, in this example, this is done by just copying the new file
     echo "Updating script to the latest version."
-    cp "$NEW_FILE" "$SCRIPT_NAME"
+    mv "$NEW_FILE" "$SCRIPT_NAME"
     rm -f "$NEW_FILE"
 
     # note that at this point this file was overwritten in the disk
