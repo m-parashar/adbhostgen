@@ -41,7 +41,6 @@ selfUpdate ()
 # Overwrite old file with new
 if mv $NEW_VERSION $SELF; then
 	echo "Updating script to the latest version."
-	rm $NEW_VERSION
 else
 	echo "Self-update failed."
 fi
