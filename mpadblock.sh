@@ -43,11 +43,9 @@ else
 fi
 EOF
 
-echo "Self-updating to the latest version."
-/bin/sh updateScript.sh &
+#echo "Self-updating to the latest version."
+#/bin/sh updateScript.sh &
 }
-
-selfUpdate
 
 # Address to send ads to. This could possibily be removed, but may be useful for debugging purposes?
 destinationIP="0.0.0.0"
@@ -71,7 +69,7 @@ mpdomains="${MPDIR}/mpdomains"
 tempmpdlist="${TMPDIR}/mpdomains.tmp"
 
 # define aggressiveness: [ 0 | 1 ]
-BLITZ=1
+BLITZ=0
 
 if [ "$SELF_LOGGING" != "1" ]; then
     # The parent process will enter this branch and set up logging
