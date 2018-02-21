@@ -71,7 +71,7 @@ mpdomains="${MPDIR}/mpdomains"
 tempmpdlist="${TMPDIR}/mpdomains.tmp"
 
 # define aggressiveness: [ 0 | 1 ]
-BLITZ=0
+BLITZ=1
 
 if [ "$SELF_LOGGING" != "1" ]; then
     # The parent process will enter this branch and set up logging
