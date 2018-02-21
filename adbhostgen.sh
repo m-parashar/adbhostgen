@@ -13,9 +13,9 @@
 # thanks3 : Arthur Borsboom https://github.com/arthurborsboom
 #
 # @Manish Parashar
-# Last updated: 2018/02/11
+# Last updated: 2018/02/21
 
-VERSION="20180211"
+VERSION="20180221"
 
 # Address to send ads to. This could possibily be removed, but may be useful for debugging purposes?
 destinationIP="0.0.0.0"
@@ -72,8 +72,14 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 	echo "Network up. Generating the hosts file now..."
 
 	if [ ! -e cacert.pem ] || [ $(date +%A) = "Monday" ]; then
-		echo "Downloading / updating cURL cacert for secure communication."
+		echo "Downloading / updating cURL cacert for secure communication..."
 		curl -s --cacert cacert.pem --remote-name --time-cond cacert.pem https://curl.haxx.se/ca/cacert.pem || curl -s -k --remote-name --time-cond cacert.pem https://curl.haxx.se/ca/cacert.pem
+	fi
+
+	if [ ! -e $whitelist ] || [ ! -e $blacklist ]; then
+		echo "Whitelist and Blacklist files not found. Downloading latest defaults..."
+		curl -s --cacert cacert.pem https://raw.githubusercontent.com/m-parashar/adbhostgen/master/whitelist > $whitelist
+		curl -s --cacert cacert.pem https://raw.githubusercontent.com/m-parashar/adbhostgen/master/blacklist > $blacklist
 	fi
 
 	if [ $BLITZ -eq 1 ]; then
