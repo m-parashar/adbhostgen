@@ -33,14 +33,13 @@ selfUpdate ()
 		cp "$UPDATED_VER" "$SELF"
 		rm -f "$UPDATED_VER"
 
-		$SELF $ARGS
+		exec $SELF $ARGS
 		exit 0
 	}
 	echo "$(basename $0) updated to version $VERSION."
 }
 
-main ()
-{
+selfUpdate
 
 # Address to send ads to. This could possibily be removed, but may be useful for debugging purposes?
 destinationIP="0.0.0.0"
@@ -229,9 +228,6 @@ else
 	echo "Network is down. Aborting."
 fi
 }
-
-selfUpdate
-main
 
 # Give the script permissions to execute:
 # chmod +x mpadblock.sh
