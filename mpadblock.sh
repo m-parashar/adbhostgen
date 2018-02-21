@@ -1,7 +1,7 @@
 #!/bin/sh
 # File: mpadblock.sh
 #
-# Script to generate a MEGA hosts file for DD-WRT
+# Self-updating script to generate a MEGA hosts file for DD-WRT
 # for use with dnsmasq's addn-hosts configuration
 #
 # https://github.com/m-parashar/adbhostgen
