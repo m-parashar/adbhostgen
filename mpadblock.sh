@@ -24,7 +24,7 @@ UPDATED_VER="/tmp/mpadblock.sh"
 selfUpdate ()
 {
 	if ping -q -c 1 -W 1 google.com >/dev/null; then
-		curl -s --cacert cacert.pem https://raw.githubusercontent.com/m-parashar/adbhostgen/master/mpadblock.sh > $UPDATED_VER
+		curl -s -k https://raw.githubusercontent.com/m-parashar/adbhostgen/master/mpadblock.sh > $UPDATED_VER
 	fi
 
 	old_md5=`md5sum $SELF | cut -d' ' -f1`
