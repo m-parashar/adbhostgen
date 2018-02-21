@@ -29,7 +29,6 @@ selfUpdate ()
 		curl -s --cacert cacert.pem https://raw.githubusercontent.com/m-parashar/adbhostgen/master/mpadblock.sh > $NEW_VERSION
 	fi
 
-  	  # Copy over modes from old version
   	  if ! chmod 755 $NEW_VERSION ; then
   	  	echo "Self-update failed."
   	  	exit 1
@@ -46,10 +45,12 @@ else
 fi
 EOF
 
-echo -n "Self-updating to the latest version."
+echo "Self-updating to the latest version."
 exec /bin/sh updateScript.sh
 exit 0
 }
+
+selfUpdate
 
 # Address to send ads to. This could possibily be removed, but may be useful for debugging purposes?
 destinationIP="0.0.0.0"
@@ -75,8 +76,6 @@ tempmpdlist="${TMPDIR}/mpdomains.tmp"
 # define aggressiveness: [ 0 | 1 ]
 BLITZ=0
 
-main ()
-{
 if [ "$SELF_LOGGING" != "1" ]; then
     # The parent process will enter this branch and set up logging
 
@@ -239,10 +238,6 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 else
 	echo "Network is down. Aborting."
 fi
-}
-
-selfUpdate
-main
 
 # Give the script permissions to execute:
 # chmod +x mpadblock.sh
