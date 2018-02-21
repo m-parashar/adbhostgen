@@ -36,7 +36,7 @@ selfUpdate ()
 		mv "$UPDATED_VER" "$SELF"
 		exec $SELF $ARGS
 	fi
-	echo "$(basename $0) updated to version $VERSION."
+	echo "$(basename $0) version: $VERSION."
 }
 
 selfUpdate
