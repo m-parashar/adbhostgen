@@ -34,7 +34,6 @@ selfUpdate ()
 		rm -f "$UPDATED_VER"
 
 		exec $SELF $ARGS
-		exit 0
 	}
 	echo "$(basename $0) updated to version $VERSION."
 }
