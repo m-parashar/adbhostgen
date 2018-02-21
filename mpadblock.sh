@@ -27,14 +27,15 @@ selfUpdate ()
 		curl -s --cacert cacert.pem https://raw.githubusercontent.com/m-parashar/adbhostgen/master/mpadblock.sh > $UPDATED_VER
 	fi
 
-	[ -f "$UPDATED_VER" ] && {
+	old_md5=`md5sum $SELF | cut -d' ' -f1`
+	new_md5=`md5sum $UPDATED_VER | cut -d' ' -f1`
+
+	if [ "$old_md5" != "$new_md5" ]; then
 		echo "Self-updating to the latest version."
 		chmod 755 "$UPDATED_VER"
-		cp "$UPDATED_VER" "$SELF"
-		rm -f "$UPDATED_VER"
-
+		mv "$UPDATED_VER" "$SELF"
 		exec $SELF $ARGS
-	}
+	fi
 	echo "$(basename $0) updated to version $VERSION."
 }
 
