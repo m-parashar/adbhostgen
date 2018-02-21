@@ -29,10 +29,10 @@ selfUpdate ()
 		curl -s --cacert cacert.pem https://raw.githubusercontent.com/m-parashar/adbhostgen/master/mpadblock.sh > $NEW_VERSION
 	fi
 
-  	  if ! chmod 755 $NEW_VERSION ; then
-  	  	echo "Self-update failed."
-  	  	exit 1
-  	  fi
+	if ! chmod 755 $NEW_VERSION ; then
+		echo "Self-update failed."
+		exit 1
+	fi
 
   # Spawn update script
   cat > updateScript.sh << EOF
@@ -47,7 +47,6 @@ EOF
 
 echo "Self-updating to the latest version."
 exec /bin/sh updateScript.sh
-exit 0
 }
 
 selfUpdate
