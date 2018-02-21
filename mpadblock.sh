@@ -17,11 +17,9 @@
 
 VERSION="20180221"
 
-SELF="$0"
+SELF=$(basename $0)
 ARGS="$@"
 NEW_VERSION="/tmp/mpadblock.sh"
-
-set -o errexit
 
 selfUpdate ()
 {
@@ -46,10 +44,7 @@ fi
 EOF
 
 echo "Self-updating to the latest version."
-exec /bin/sh updateScript.sh
-
-echo "Running the latest version."
-exec $SELF $ARGS
+/bin/sh updateScript.sh &
 }
 
 selfUpdate
