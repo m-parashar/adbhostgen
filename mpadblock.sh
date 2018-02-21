@@ -30,8 +30,7 @@ selfUpdate ()
 	fi
 
   	  # Copy over modes from old version
-  	  OCTAL_MODE=$(stat -c '%a' $SELF)
-  	  if ! chmod $OCTAL_MODE $NEW_VERSION ; then
+  	  if ! chmod 755 $NEW_VERSION ; then
   	  	echo "Self-update failed."
   	  	exit 1
   	  fi
