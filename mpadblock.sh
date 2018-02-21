@@ -84,7 +84,7 @@ if [ "$SELF_LOGGING" != "1" ]; then
     tee ${MPDIR}/mphosts.log <$PIPE &
 
     # Unlink $PIPE because the parent process no longer needs it
-    rm $PIPE    
+    rm $PIPE
 
     # Wait for child process running the rest of this script
     wait $PID
@@ -110,7 +110,6 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 
 	if [ $BLITZ -eq 1 ]; then
 		echo "BLITZ mode ON."
-		
 	else
 		echo "BLITZ mode OFF."
 	fi
