@@ -11,7 +11,12 @@ Securemecca list
 abuse.ch blocklist
 adaway list
 Easylist & others
+Processing whitelist and blacklist files...
+Size of /tmp/mphosts.tmp before formatting: 12.1M
+Size of /tmp/mpdomains.tmp before formatting: 4.0M
 Removing duplicates and formatting the list of domains...
 Removing temporary lists...
-332728 ad domains blocked.
+Size of /jffs/dnsmasq/mphosts after formatting: 9.2M
+Size of /jffs/dnsmasq/mpdomains after formatting: 2.9M
+332983 ad domains blocked.
 Restarting DNS server (dnsmasq)...
