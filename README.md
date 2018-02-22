@@ -1,6 +1,6 @@
 # Ad-blocking on DD-WRT
 
-VERSION: 20180221 [YYYYMMDD]
+VERSION: 20180222 [YYYYMMDD]
 
 System: Netgear R8500
 
