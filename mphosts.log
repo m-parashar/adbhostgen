@@ -12,11 +12,11 @@ abuse.ch blocklist
 adaway list
 Easylist & others
 Processing whitelist and blacklist files...
-Size of /tmp/mphosts.tmp before formatting: 12.1M
-Size of /tmp/mpdomains.tmp before formatting: 4.0M
+Size of /tmp/mphosts.tmp before formatting: 13.1M
+Size of /tmp/mpdomains.tmp before formatting: 6.1M
 Removing duplicates and formatting the list of domains...
 Removing temporary lists...
-Size of /jffs/dnsmasq/mphosts after formatting: 9.2M
-Size of /jffs/dnsmasq/mpdomains after formatting: 2.9M
-333072 ad domains blocked.
+Size of /jffs/dnsmasq/mphosts after formatting: 9.3M
+Size of /jffs/dnsmasq/mpdomains after formatting: 5.0M
+337239 ad domains blocked.
 Restarting DNS server (dnsmasq)...
