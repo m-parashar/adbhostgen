@@ -26,6 +26,7 @@ INSTALLATION:
 
 3. Run adbhostgen.sh in /jffs/dnsmasq
 
+
 SETTINGS:
 ---------
 
@@ -51,5 +52,13 @@ SETTINGS:
 	SEE: https://i.imgur.com/Y7RAEVk.png
 
 5. Reboot
+
+
+USAGE:
+------
+
+Add your blacklist or whitelist domains to myblacklist and mywhitelist files respectively.
+Do not save anything in blacklist or whitelist files as they will be overwritten every
+time the script is executed.
 
 FOR DETAILS AND SCREENSHOTS: https://www.dd-wrt.com/phpBB2/viewtopic.php?t=307533

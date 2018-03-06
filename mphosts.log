@@ -20,7 +20,7 @@ Removing duplicates and formatting the list of domains...
 Removing temporary files...
 Size of /jffs/dnsmasq/mphosts after formatting: 10.5M
 Size of /jffs/dnsmasq/mpdomains after formatting: 3.1M
-381150 ad domains blocked.
+380564 ad domains blocked.
 Restarting DNS server (dnsmasq)...
-Total time: 4:51 minutes.
+Total time: 5:3 minutes.
 DONE.
