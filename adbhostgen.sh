@@ -24,7 +24,6 @@ TMPDIR='/tmp'
 
 # dnsmasq hosts file
 mphosts="${MPDIR}/mphosts"
-#bkphosts="${MPDIR}/mphosts.bkp"
 tmphosts="${TMPDIR}/mphosts.tmp"
 
 # dnsmasq domain file
@@ -36,6 +35,12 @@ blacklist="${MPDIR}/blacklist"
 
 # whitelist file: a list of whitelisted domains one per line
 whitelist="${MPDIR}/whitelist"
+
+# user's custom blacklist file: a list of blacklisted domains one per line
+myblacklist="${MPDIR}/myblacklist"
+
+# user's custom whitelist file: a list of whitelisted domains one per line
+mywhitelist="${MPDIR}/mywhitelist"
 
 # curl certificates and options
 export CURL_CA_BUNDLE="${MPDIR}/ca-bundle.crt"
@@ -95,8 +100,8 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 	fi
 
 	echo "Updating blacklist and whitelist. Custom changes will be preserved..."
-	MPGET https://raw.githubusercontent.com/m-parashar/adbhostgen/master/whitelist >> $whitelist
-	MPGET https://raw.githubusercontent.com/m-parashar/adbhostgen/master/blacklist >> $blacklist
+	MPGET https://raw.githubusercontent.com/m-parashar/adbhostgen/master/blacklist > $blacklist
+	MPGET https://raw.githubusercontent.com/m-parashar/adbhostgen/master/whitelist > $whitelist
 
 	if [ $BLITZ -eq 1 ]; then
 		echo "BLITZ mode: ON"
@@ -195,24 +200,30 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 		MPGETSSL https://adzhosts.fr/hosts/adzhosts-mac-linux.txt | grep -v "::1" | sed 's/#.*$//;/^$/d' | awk '{print $2}' >> $tmphosts
 	fi
 
-	# Remove entries from the whitelist file if it exists at the root of the current user's home folder
-	echo "Processing whitelist and blacklist files..."
-	sed -r 's/^\s*//; s/\s*$//; /^$/d' $blacklist | sort -u > tmpbl && mv tmpbl $blacklist
-	sed -r 's/^\s*//; s/\s*$//; /^$/d' $whitelist | sort -u > tmpwl && mv tmpwl $whitelist
-
 	fileSize=`du -h $tmphosts | awk '{print $1}'`
 	echo "Size of $tmphosts before formatting: $fileSize"
 	fileSize=`du -h $tmpdomains | awk '{print $1}'`
 	echo "Size of $tmpdomains before formatting: $fileSize"
 
-	echo "Removing duplicates and formatting the list of domains..."
-	#[ -f "$mphosts" ] && cp $mphosts $bkphosts
-	cat $tmphosts | sed $'s/\r$//' | cat "$blacklist" - | grep -Fvwf $whitelist | sort -u | sed '/^$/d' | awk -v "IP=$supermassiveblackhole" '{sub(/\r$/,""); print IP" "$0}' > $mphosts
-	cat $tmpdomains | grep -Fvwf $whitelist | sort -u  > $mpdomains
+	echo "Processing whitelist and blacklist files..."
+	sed -r 's/^\s*//; s/\s*$//; /^$/d' $blacklist | sort -u > tmpbl && cp tmpbl $blacklist
+	sed -r 's/^\s*//; s/\s*$//; /^$/d' $whitelist | sort -u > tmpwl && cp tmpwl $whitelist
 
-	echo "Removing temporary lists..."
+	if [ -s "$myblacklist" ] || [ -s "$mywhitelist" ]; then
+		echo "Custom blacklist and whitelist found. Merging..."
+		cat "$blacklist" | cat "$myblacklist" - > tmpbl
+		cat "$whitelist" | cat "$mywhitelist" - > tmpwl
+	fi
+
+	echo "Removing duplicates and formatting the list of domains..."
+	cat $tmphosts | sed $'s/\r$//' | cat tmpbl - | grep -Fvwf tmpwl | sort -u | sed '/^$/d' | awk -v "IP=$supermassiveblackhole" '{sub(/\r$/,""); print IP" "$0}' > $mphosts
+	cat $tmpdomains | grep -Fvwf tmpwl | sort -u  > $mpdomains
+
+	echo "Removing temporary files..."
 	rm $tmphosts
 	rm $tmpdomains
+	rm tmpbl
+	rm tmpwl
 
 	fileSize=`du -h $mphosts | awk '{print $1}'`
 	echo "Size of $mphosts after formatting: $fileSize"
@@ -228,9 +239,9 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 
 	TIMERSTOP=`date +%s`
 	RTMINUTES=$(( $((TIMERSTOP - TIMERSTART)) /60 ))
-RTSECONDS=$(( $((TIMERSTOP - TIMERSTART)) %60 ))
-echo "Total time: $RTMINUTES:$RTSECONDS minutes."
-echo "DONE."
+	RTSECONDS=$(( $((TIMERSTOP - TIMERSTART)) %60 ))
+	echo "Total time: $RTMINUTES:$RTSECONDS minutes."
+	echo "DONE."
 
 else
 	echo "Network is down. Aborting."
