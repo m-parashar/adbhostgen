@@ -4,7 +4,6 @@
 28731.islafenice.net
 2975c.v.fwmrm.net
 2mdn.net
-4-edge-chat.facebook.com
 4.afs.googleadservices.com
 5.islafenice.net
 6.islafenice.net
@@ -28,6 +27,7 @@ ads-blocker.com
 ads-fa.spotify.com
 ads.doubleclick.net
 ads.exoclick.com
+ads.google.com
 ads.imdb.com
 ads.openx.net
 ads.scorecardresearch.com
@@ -44,6 +44,7 @@ adsnetwork.click
 adsymptotic.com
 adsystem.com
 adtechus.com
+adwords.google.com
 alljoyn.org
 almoreaffiliates-api.omarsys.com
 amazon-adsystem.com
@@ -53,6 +54,7 @@ americanrevolution24.com
 analytic-google.com
 analytics-api-samples.googlecode.com
 analytics.bidfluence.com
+analytics.google.com
 analytics.spotify.com
 angsrvr.com
 anzeigen-buchen.sueddeutsche.de
@@ -60,7 +62,6 @@ anzeigen.sueddeutsche.de
 ap.lijit.com
 api.mixpanel.com
 api.taboola.com
-apis.google.com
 app-measurement.com
 appsflyer.com
 arkadiumhosted.com
@@ -102,13 +103,11 @@ cf2.vuze.com
 ciqcol01.ciq.labs.att.com
 click2createahero.net
 clickserve.dartsearch.net
-clients6.google.com
 clklink.net
 cn.tatami-solutions.com
 cnt.viptube.com
 config.samqaicongen.com
 config.unityads.unity3d.com
-connect.facebook.net
 contextweb.com
 crashdump.spotify.com
 crashlytics.com
@@ -145,7 +144,6 @@ events3alt.adcolony.com
 eventtracking.omarsys.com
 ew1.dms-gld.bigdata.ssp.samsung.com
 f1-blick-ch.cdn.ampproject.org
-fbcdn-profile-a.akamaihd.net
 files.adform.net
 finishclueobscure.info
 flurry.adserver.prod.g04.yahoodns.net
@@ -233,9 +231,11 @@ outcome.supersonicads.com
 pagead-googlehosted.l.google.com
 pagead.googlesyndication.com
 pagead.l.doubleclick.net
+pagead.l.google.com
 pagead1.googlesyndication.com
 pagead2.googlesyndication.com
 partner.googleadservices.com
+partnerad.l.google.com
 pasta.esfile.duapps.com
 pixel.adsafeprotected.com
 pixel.moatads.com
@@ -259,15 +259,8 @@ s.komoona.com
 s.youtube.com
 s.ytimg.com
 s0.2mdn.net
-safebrowsing-cache.google.com
-safebrowsing.cache.l.google.com
-safebrowsing.google.com
 samsungresources.visionobjects.com
 saturn.tiser.com.au
-sb-ssl.google.com
-sb-ssl.l.google.com
-sb.google.com
-sb.l.google.com
 sb.scorecardresearch.com
 scandicas.com
 secure-ds.serving-sys.com
@@ -376,6 +369,7 @@ www.clklink.net
 www.contextweb.com
 www.d.openx.net
 www.dartsearch.net
+www.doubleclickbygoogle.com
 www.engine.bidfluence.com
 www.engine.newsmaxfeednetwork.com
 www.esd-secure.taboola.com.edgekey.net

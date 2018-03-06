@@ -1,5 +1,6 @@
 Network up. Generating the hosts file now...
-BLITZ mode OFF.
+Downloading / updating cURL certificates for secure communication...
+BLITZ mode: OFF
 StevenBlack list
 notracking list
 Cameleon list
@@ -12,11 +13,13 @@ abuse.ch blocklist
 adaway list
 Easylist & others
 Processing whitelist and blacklist files...
-Size of /tmp/mphosts.tmp before formatting: 12.8M
-Size of /tmp/mpdomains.tmp before formatting: 6.2M
+Size of /tmp/mphosts.tmp before formatting: 12.9M
+Size of /tmp/mpdomains.tmp before formatting: 4.0M
 Removing duplicates and formatting the list of domains...
 Removing temporary lists...
-Size of /jffs/dnsmasq/mphosts after formatting: 9.1M
-Size of /jffs/dnsmasq/mpdomains after formatting: 5.0M
-327266 ad domains blocked.
+Size of /jffs/dnsmasq/mphosts after formatting: 10.5M
+Size of /jffs/dnsmasq/mpdomains after formatting: 3.1M
+381149 ad domains blocked.
 Restarting DNS server (dnsmasq)...
+Total time: 5:4 minutes.
+DONE.
