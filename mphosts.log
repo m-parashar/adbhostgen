@@ -1,5 +1,5 @@
 Network up. Generating the hosts file now...
-Downloading / updating cURL certificates for secure communication...
+Updating blacklist and whitelist. Custom changes will be preserved...
 BLITZ mode: OFF
 StevenBlack list
 notracking list
@@ -21,5 +21,5 @@ Size of /jffs/dnsmasq/mphosts after formatting: 10.5M
 Size of /jffs/dnsmasq/mpdomains after formatting: 3.1M
 381149 ad domains blocked.
 Restarting DNS server (dnsmasq)...
-Total time: 5:4 minutes.
+Total time: 5:0 minutes.
 DONE.

@@ -122,11 +122,9 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 		MPGETSSL https://raw.githubusercontent.com/bagder/ca-bundle/master/ca-bundle.crt > ca-bundle.crt || MPGET https://raw.githubusercontent.com/bagder/ca-bundle/master/ca-bundle.crt
 	fi
 
-	if [ ! -s $whitelist ] || [ ! -s $blacklist ]; then
-		echo "Whitelist and Blacklist files not found. Downloading latest defaults..."
-		MPGETSSL https://raw.githubusercontent.com/m-parashar/adbhostgen/master/whitelist > $whitelist
-		MPGETSSL https://raw.githubusercontent.com/m-parashar/adbhostgen/master/blacklist > $blacklist
-	fi
+	echo "Updating blacklist and whitelist. Custom changes will be preserved..."
+	MPGET https://raw.githubusercontent.com/m-parashar/adbhostgen/master/whitelist >> $whitelist
+	MPGET https://raw.githubusercontent.com/m-parashar/adbhostgen/master/blacklist >> $blacklist
 
 	if [ $BLITZ -eq 1 ]; then
 		echo "BLITZ mode: ON"
@@ -258,9 +256,9 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 
 	TIMERSTOP=`date +%s`
 	RTMINUTES=$(( $((TIMERSTOP - TIMERSTART)) /60 ))
-	RTSECONDS=$(( $((TIMERSTOP - TIMERSTART)) %60 ))
-	echo "Total time: $RTMINUTES:$RTSECONDS minutes."
-	echo "DONE."
+RTSECONDS=$(( $((TIMERSTOP - TIMERSTART)) %60 ))
+echo "Total time: $RTMINUTES:$RTSECONDS minutes."
+echo "DONE."
 
 else
 	echo "Network is down. Aborting."
