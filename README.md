@@ -6,7 +6,9 @@ https://github.com/m-parashar/adbhostgen
 Copyright 2018 Manish Parashar
 
 DEVELOPED AND TESTED ON: NETGEAR R8500 / DD-WRT v3.0-r35030M kongac (02/19/18)
+
 HARDWARE REQUIREMENTS: Minimum 4GB USB drive partitioned, formatted, and mounted as /jffs (1-2GB), swap (256-512MB), and optionally /opt (1-2GB).
+
 ![usb](https://i.imgur.com/3c5kkTM.png)
 
 SOFTWARE REQUIREMENTS: DD-WRT (preferably latest), cURL
