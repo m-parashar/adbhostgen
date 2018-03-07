@@ -11,9 +11,9 @@
 # Thanks : Pi-hole, Christopher Vella, Arthur Borsboom
 #
 # @Manish Parashar
-# Last updated: 2018/03/06
+# Last updated: 2018/03/07
 
-VERSION="20180306"
+VERSION="20180307"
 
 SELF="$0"
 ARGS="$@"
@@ -94,7 +94,7 @@ if [ "$SELF_LOGGING" != "1" ]; then
     # The parent process will enter this branch and set up logging
 
     # Create a named piped for logging the child's output
-    PIPE=tmp.fifo
+    PIPE=/tmp/tmp.fifo
     mkfifo $PIPE
 
     # Launch the child process without redirected to the named pipe
@@ -210,7 +210,7 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 		MPGET http://winhelp2002.mvps.org/hosts.txt | grep -v "::1" | sed 's/#.*$//;/^$/d' | awk '{print $2}' >> $tmphosts
 
 		echo "Yoyo list"
-		MPGETSSL https://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext&useip=0.0.0.0 | grep -v "#" | awk '{print $2}' >> $tmphosts
+		MPGETSSL -d mimetype=plaintext -d hostformat=unixhosts https://pgl.yoyo.org/adservers/serverlist.php? | grep -v "#" | awk '{print $2}' >> $tmphosts
 
 		echo "HostsFile.mine.nu list"
 		MPGETSSL https://hostsfile.mine.nu/hosts0.txt | sed 's/#.*$//;/^$/d' | awk '{print $2}' >> $tmphosts
@@ -239,6 +239,8 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 
 	if [ -s "$myblacklist" ] || [ -s "$mywhitelist" ]; then
 		echo "Custom blacklist and whitelist found. Merging..."
+		sed -r 's/^\s*//; s/\s*$//; /^$/d' $myblacklist | sort -u > tmpmybl && mv tmpmybl $myblacklist
+		sed -r 's/^\s*//; s/\s*$//; /^$/d' $mywhitelist | sort -u > tmpmywl && mv tmpmywl $mywhitelist
 		cat "$blacklist" | cat "$myblacklist" - > tmpbl
 		cat "$whitelist" | cat "$mywhitelist" - > tmpwl
 	fi

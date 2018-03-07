@@ -4,7 +4,7 @@ echo "creating archive for installation"
 cd /jffs/dnsmasq
 rm adbhostgen.tar.gz
 rm installer.sh
-tar czf adbhostgen.tar.gz .
+tar czvf adbhostgen.tar.gz README adbhostgen.sh blacklist ca-bundle.crt cacert.pem mpadblock.sh mpcurl mpdomains mphosts whitelist
 
 echo "Generating installer stub"
 cat << 'EOF' >> installer.sh
