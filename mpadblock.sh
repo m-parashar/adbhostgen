@@ -127,7 +127,7 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 		MPGETSSL https://raw.githubusercontent.com/bagder/ca-bundle/master/ca-bundle.crt > ca-bundle.crt || MPGET https://raw.githubusercontent.com/bagder/ca-bundle/master/ca-bundle.crt
 	fi
 
-	echo "Updating offocial blacklist and whitelist files..."
+	echo "Updating official blacklist and whitelist files..."
 	MPGET https://raw.githubusercontent.com/m-parashar/adbhostgen/master/blacklist > $blacklist
 	MPGET https://raw.githubusercontent.com/m-parashar/adbhostgen/master/whitelist > $whitelist
 
