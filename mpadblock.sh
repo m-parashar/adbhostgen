@@ -13,7 +13,7 @@
 # @Manish Parashar
 # Last updated: 2018/03/07
 
-VERSION="20180307"
+VERSION="20180307rev1"
 
 SELF="$0"
 ARGS="$@"
@@ -127,7 +127,7 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 		MPGETSSL https://raw.githubusercontent.com/bagder/ca-bundle/master/ca-bundle.crt > ca-bundle.crt || MPGET https://raw.githubusercontent.com/bagder/ca-bundle/master/ca-bundle.crt
 	fi
 
-	echo "Updating blacklist and whitelist. Custom changes will be preserved..."
+	echo "Updating offocial blacklist and whitelist files..."
 	MPGET https://raw.githubusercontent.com/m-parashar/adbhostgen/master/blacklist > $blacklist
 	MPGET https://raw.githubusercontent.com/m-parashar/adbhostgen/master/whitelist > $whitelist
 
@@ -238,11 +238,11 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 	sed -r 's/^\s*//; s/\s*$//; /^$/d' $whitelist | sort -u > tmpwl && cp tmpwl $whitelist
 
 	if [ -s "$myblacklist" ] || [ -s "$mywhitelist" ]; then
-		echo "Custom blacklist and whitelist found. Merging..."
+		echo "Custom blacklist and whitelist files found. Processing..."
 		sed -r 's/^\s*//; s/\s*$//; /^$/d' $myblacklist | sort -u > tmpmybl && mv tmpmybl $myblacklist
 		sed -r 's/^\s*//; s/\s*$//; /^$/d' $mywhitelist | sort -u > tmpmywl && mv tmpmywl $mywhitelist
-		cat "$blacklist" | cat "$myblacklist" - > tmpbl
-		cat "$whitelist" | cat "$mywhitelist" - > tmpwl
+		cat $blacklist | cat $myblacklist - > tmpbl
+		cat $whitelist | cat $mywhitelist - | grep -Fvwf $myblacklist > tmpwl
 	fi
 
 	echo "Removing duplicates and formatting the list of domains..."
