@@ -1,12 +1,12 @@
 #!/bin/sh
 
-echo "creating archive for installation"
+echo "> Creating archive for installation"
 cd /jffs/dnsmasq
 rm adbhostgen.tar.gz
 rm installer.sh
 tar czvf adbhostgen.tar.gz README adbhostgen.sh blacklist ca-bundle.crt cacert.pem mpadblock.sh mpcurl mpdomains mphosts whitelist
 
-echo "Generating installer stub"
+echo "> Generating installer stub"
 cat << 'EOF' >> installer.sh
 #!/bin/sh
 
@@ -27,8 +27,8 @@ tail -n+${ARCHIVE} "${0}" | tar xzv -C ${DESTINATION}
 # Any post-installation tasks
 
 echo ""
-echo "Installation complete."
-echo "Don't forget to run adbhostgen.sh in ${DESTINATION}"
+echo "> Installation complete."
+echo "> Don't forget to run adbhostgen.sh in ${DESTINATION}"
 echo ""
 
 # Exit from the script with success (0)
@@ -37,8 +37,8 @@ exit 0
 __ARCHIVE__
 EOF
 
-echo "Creating installer for adbhostgen"
+echo "> Creating installer for adbhostgen"
 cat adbhostgen.tar.gz >> installer.sh
 chmod +x installer.sh
 
-echo "installer created."
+echo "> Installer created."

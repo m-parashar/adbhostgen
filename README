@@ -1,6 +1,6 @@
 Ad-blocking on DD-WRT
 ---------------------
-Script to generate a MEGA hosts file for DD-WRT
+Script to generate massive block lists for DD-WRT
 
 https://github.com/m-parashar/adbhostgen
 Copyright 2018 Manish Parashar
@@ -11,8 +11,8 @@ SEE: https://i.imgur.com/3c5kkTM.png
 
 SOFTWARE REQUIREMENTS: DD-WRT (preferably latest), cURL
 
-VERSION: 20180306
-DOWNLOAD: https://github.com/m-parashar/adbhostgen/releases/tag/20180306
+VERSION: 20180308
+DOWNLOAD: https://github.com/m-parashar/adbhostgen/releases/tag/20180308
 
 INSTALLATION:
 -------------
