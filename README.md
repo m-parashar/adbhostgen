@@ -13,8 +13,7 @@ HARDWARE REQUIREMENTS: Minimum 4GB USB drive partitioned, formatted, and mounted
 
 SOFTWARE REQUIREMENTS: DD-WRT (preferably latest), cURL
 
-VERSION: 20180306
-DOWNLOAD: https://github.com/m-parashar/adbhostgen/releases/tag/20180306
+DOWNLOAD: https://github.com/m-parashar/adbhostgen/releases
 
 INSTALLATION:
 -------------
@@ -24,7 +23,7 @@ INSTALLATION:
 
 1b. Download and extract adbhostgen.7z or adbhostgen.tar.gz into /jffs/dnsmasq directory.
 
-2. OPTIONAL: OPTIONAL: Edit adbhostgen.sh to set BLITZ mode to 1, if you want an aggressive hosts file. By default BLITZ is set to 0.
+2. OPTIONAL: Edit adbhostgen.sh to set BLITZ mode to 1, if you want an aggressive hosts file. By default BLITZ is set to 0.
 
 3. Run adbhostgen.sh in /jffs/dnsmasq
 
@@ -59,8 +58,16 @@ SETTINGS:
 
 5. Reboot
 
+USAGE:
+------
+
+Add your blacklist or whitelist domains to myblacklist and mywhitelist files respectively.
+Do not save anything in blacklist or whitelist files as they will be overwritten every
+time the script is executed.
+
 FOR DETAILS AND SCREENSHOTS: https://www.dd-wrt.com/phpBB2/viewtopic.php?t=307533
 
+--
 
 Should work on R7000, R8000 and other >128MB RAM routers too. Any feedback is welcome. 
 
@@ -70,6 +77,6 @@ BLITZ=0 mphosts: ~10 MiB
 
 Status: 
 
-![log](https://i.imgur.com/dbLBtRL.png)
+![log](https://i.imgur.com/cvU6cKN.png)
 
 ![sysstat](https://i.imgur.com/dS2Zhru.png)
