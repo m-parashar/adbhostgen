@@ -1,33 +1,16 @@
-============================================
-|           adbhostgen for DD-WRT          |
-| https://github.com/m-parashar/adbhostgen |
-|      Copyright 2018 Manish Parashar      |
-============================================
-        Thu Mar  8 17:13:39 IST 2018
-# VERSION: 20180308
-# Cranking up the ad-slaying engine
-> Updating official blacklist and whitelist files
-# BLITZ mode: OFF
-> Processing StevenBlack lists
-> Processing notracking blocklists
-> Processing Cameleon list
-> Processing hosts-file ad_servers list
-> Processing Disconnect.me lists
-> Processing quidsup/notrack lists
-> Processing MalwareDomains lists
-> Processing Securemecca list
-> Processing abuse.ch blocklists
-> Processing adaway list
-> Processing Easylist & others
-# Size of /tmp/mphosts.tmp before formatting: 12.8M
-# Size of /tmp/mpdomains.tmp before formatting: 4.0M
-> Processing blacklist and whitelist files
-> Processing myblacklist and mywhitelist files
-> Processing final mphosts and mpdomains files
-> Removing temporary files
-# Size of /jffs/dnsmasq/mphosts after formatting: 10.5M
-# Size of /jffs/dnsmasq/mpdomains after formatting: 3.1M
-# Number of ad domains blocked: approx 379882
-> Restarting DNS server (dnsmasq)
-# Total time: 4:48 minutes
-# DONE
+
+USAGE: adbhostgen.sh [-h | -? | --help] [-v | --version] [-z | -0] [-Z | -1] [-b | --bl=<domain.name>] [-w | --wl=<domain.name>]
+
+OPERATION:
+	[-z | -0]			Optimum protection, set BLITZ=0 [DEFAULT]
+	[-Z | -1]			Maximum protection, set BLITZ=1
+	[-d | -D]			Do not process personal lists, set DISTRIB=1
+	[-b | --bl=]	domain.name	Add domain.name to myblacklist
+	[-w | --wl=]	domain.name	Add domain.name to mywhitelist
+	[-h | --help]			Display this help screen and exit
+	[-v | --version]		Print adbhostgen.sh version and exit
+
+EXAMPLES:
+	adbhostgen.sh -1 --bl=example1.com --wl=example2.com
+	adbhostgen.sh -b example1.com -w example2.com --wl=example3.com
+

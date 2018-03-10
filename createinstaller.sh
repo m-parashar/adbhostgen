@@ -10,11 +10,11 @@ echo "> Generating installer stub"
 cat << 'EOF' >> installer.sh
 #!/bin/sh
 
-echo "============================================"
-echo "|       Installing adblock for DD-WRT      |"
-echo "| https://github.com/m-parashar/adbhostgen |"
-echo "|      Copyright 2018 Manish Parashar      |"
-echo "============================================"
+echo "======================================================"
+echo "|            Installing adblock for DD-WRT           |"
+echo "|      https://github.com/m-parashar/adbhostgen      |"
+echo "|           Copyright 2018 Manish Parashar           |"
+echo "======================================================"
 
 # Create destination folder
 DESTINATION="/jffs/dnsmasq"
