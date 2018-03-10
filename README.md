@@ -77,6 +77,8 @@ BLITZ=0 mphosts: ~10 MiB
 
 Status: 
 
+![cmdline](https://i.imgur.com/fo9YJBT.png)
+
 ![log](https://i.imgur.com/cvU6cKN.png)
 
 ![sysstat](https://i.imgur.com/dS2Zhru.png)
