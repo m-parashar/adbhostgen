@@ -11,7 +11,7 @@
 #
 # AUTHOR: Manish Parashar
 
-VERSION="20180312"
+VERSION="20180312rev1"
 
 # define aggressiveness: [ 1 | 2 | 3 ]
 # 1: toned down, tuxedo wearing ad-slaying professional mode
@@ -132,8 +132,9 @@ while getopts "h?vzZO123dDpPrRb:w:-:" opt; do
 			help    ) ARG_HELP=true ;;
 			pause   ) rubberOff ;;
 			resume  ) rubberOn ;;
+			9000    ) BLITZ=9000 ;;
 			version ) echo "$VERSION" ; exit 0 ;;
-			help* | pause* | resume* | version* )
+			help* | pause* | resume* | version* | 9000* )
 					echo ">>> ERROR: no arguments allowed for --$OPTARG option" >&2; exit 2 ;;
 			'' )    break ;; # "--" terminates argument processing
 			* )     echo ">>> ERROR: unsupported option --$OPTARG" >&2; exit 2 ;;
@@ -205,7 +206,7 @@ fi
 
 # just in case connectivity is down for the moment
 # process the blacklists and whitelists anyway
-[ -s $mphosts ] && cp $mphosts $tmphosts
+[ -s $mphosts ] && cat $mphosts | awk '{print $2}' > $tmphosts
 [ -s $mpdomains ] && cp $mpdomains $tmpdomains
 
 # if internet is accessible, download files
@@ -352,6 +353,12 @@ if ping -q -c 1 -W 1 google.com >/dev/null; then
 
 		echo "> Processing ADZHOSTS list"
 		MPGETSSL https://adzhosts.fr/hosts/adzhosts-mac-linux.txt | grep -v "::1" | sed 's/#.*$//;/^$/d' | awk '{print $2}' >> $tmphosts
+	fi
+
+	if [ $BLITZ -eq 9000 ]; then
+		echo ">>> WHY, YOU ABSOLUTE MADMAN!"
+		echo ">>> JOG ON NOW. THIS WILL TAKE SOME TIME."
+		MPGETSSL https://raw.githubusercontent.com/chadmayfield/my-pihole-blocklists/master/lists/pi_blocklist_porn_all.list >> $tmphosts
 	fi
 
 	echo "> Updating official blacklist/whitelist files"

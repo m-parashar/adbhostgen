@@ -64,11 +64,15 @@ time the script is executed.
 CHANGELOG:
 ----------
 
+20180312rev1: BUGFIX
+
 20180312:
 A. New command line options to pause and resume protection.
 B. Added more ad/malicious domains in both hosts and dnsmasq format.
-   Even BLITZ=0 mode now blocks approx 672984 unique ad/mal domains.
-   BLITZ=1 is likely to result in ~40-50MB hosts file. Exercise caution.
+C. BLITZ=0 is no longer an option.
+   BLITZ=1 is the minimum protection level.
+   BLITZ=2 mode now blocks approx 675000 unique ad/mal domains. [DEFAULT]
+   BLITZ=3 is likely to result in ~40-50MB hosts file. Exercise caution.
 
 USAGE:
         adbhostgen.sh [-h | -? | --help] [-v | --version] [-z | -1] [-Z | -3] [-b | --bl=<domain.name>] [-w | --wl=<domain.name>]
