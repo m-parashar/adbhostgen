@@ -23,8 +23,7 @@ INSTALLATION:
 
 1b. Download and extract adbhostgen.7z or adbhostgen.tar.gz into /jffs/dnsmasq directory.
 
-2. OPTIONAL: Edit adbhostgen.sh to set BLITZ mode to 1 for minimum protection, or 3 for maximum protection. By default BLITZ is set to 2. Or use command line options -1 (-z) or -3 (-Z).
-3. Run adbhostgen.sh in /jffs/dnsmasq
+2. Run adbhostgen.sh in /jffs/dnsmasq
 
 SETTINGS:
 ---------
@@ -76,7 +75,7 @@ BLITZ=2 mphosts: ~18 MiB
 
 Status: 
 
-![cmdline](https://i.imgur.com/L9OgBx5.png)
+![cmdline](https://i.imgur.com/pDQAFbV.png)
 
 ![log](https://i.imgur.com/VBaf3If.png)
 
