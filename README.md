@@ -73,12 +73,12 @@ Should work on R7000, R8000 and other >128MB RAM routers too. Any feedback is we
 
 SIZE:
 mpdomains: ~3 MiB
-BLITZ=0 mphosts: ~10 MiB
+BLITZ=2 mphosts: ~18 MiB
 
 Status: 
 
-![cmdline](https://i.imgur.com/fo9YJBT.png)
+![cmdline](https://i.imgur.com/L9OgBx5.png)
 
-![log](https://i.imgur.com/cvU6cKN.png)
+![log](https://i.imgur.com/VBaf3If.png)
 
 ![sysstat](https://i.imgur.com/dS2Zhru.png)
