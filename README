@@ -11,8 +11,8 @@ SEE: https://i.imgur.com/3c5kkTM.png
 
 SOFTWARE REQUIREMENTS: DD-WRT (preferably latest), cURL
 
-VERSION: 20180310
-DOWNLOAD: https://github.com/m-parashar/adbhostgen/releases/tag/20180310
+VERSION: 20180312
+DOWNLOAD: https://github.com/m-parashar/adbhostgen/releases/tag/20180312
 
 INSTALLATION:
 -------------
@@ -64,18 +64,24 @@ time the script is executed.
 CHANGELOG:
 ----------
 
-20180310:
-Introduced command line arguments for changing BLITZ mode on the fly and dynamically
-adding domains to myblacklist/mywhitelist files.
+20180312:
+A. New command line options to pause and resume protection.
+B. Added more ad/malicious domains in both hosts and dnsmasq format.
+   Even BLITZ=0 mode now blocks approx 672984 unique ad/mal domains.
+   BLITZ=1 is likely to result in ~40-50MB hosts file. Exercise caution.
 
-USAGE: adbhostgen.sh [-h | -? | --help] [-v | --version] [-z | -0] [-Z | -1] [-b | --bl=<domain.name>] [-w | --wl=<domain.name>]
+USAGE:
+        adbhostgen.sh [-h | -? | --help] [-v | --version] [-z | -1] [-Z | -3] [-b | --bl=<domain.name>] [-w | --wl=<domain.name>]
 
 OPERATION:
-        [-z | -0]                       Optimum protection, set BLITZ=0 [DEFAULT]
-        [-Z | -1]                       Maximum protection, set BLITZ=1
+        [-z | -1]                       Safe minimum protection, set BLITZ=1
+        [-O | -2]                       [DEFAULT] optimum protection, set BLITZ=2
+        [-Z | -3]                       Unlock maximum protection, set BLITZ=3
         [-d | -D]                       Ignore personal lists, set DISTRIB=1
         [-b | --bl=]    domain.name     Add domain.name to myblacklist
         [-w | --wl=]    domain.name     Add domain.name to mywhitelist
+        [-p | --pause]                  Pause protection
+        [-r | --resume]                 Resume protection
         [-h | --help]                   Display this help screen and exit
         [-v | --version]                Print adbhostgen.sh version and exit
 
@@ -83,5 +89,5 @@ EXAMPLES:
         adbhostgen.sh -1 --bl=example1.com --wl=example2.com
         adbhostgen.sh -b example1.com -w example2.com --wl=example3.com
 
-
+--
 FOR DETAILS AND SCREENSHOTS: https://www.dd-wrt.com/phpBB2/viewtopic.php?t=307533
