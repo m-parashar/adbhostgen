@@ -11,8 +11,7 @@ SEE: https://i.imgur.com/3c5kkTM.png
 
 SOFTWARE REQUIREMENTS: DD-WRT (preferably latest), cURL
 
-VERSION: 20180312
-DOWNLOAD: https://github.com/m-parashar/adbhostgen/releases/tag/20180312
+DOWNLOAD: https://github.com/m-parashar/adbhostgen/releases/latest
 
 INSTALLATION:
 -------------
@@ -22,9 +21,7 @@ INSTALLATION:
 
 1b. Download and extract adbhostgen.7z or adbhostgen.tar.gz into /jffs/dnsmasq directory.
 
-2. OPTIONAL: Edit adbhostgen.sh to set BLITZ mode to 1, if you want an aggressive hosts file. By default BLITZ is set to 0.
-
-3. Run adbhostgen.sh in /jffs/dnsmasq
+2. Run adbhostgen.sh in /jffs/dnsmasq
 
 
 SETTINGS:
@@ -64,7 +61,36 @@ time the script is executed.
 CHANGELOG:
 ----------
 
-20180312rev1: BUGFIX
+20180312rev2:
+A. added --offline mode, for processing existing lists without re-downloading everything.
+B. BLITZ=0 mode is back. Four levels of protection exist now: 0, 1, 2 [default], and 3.
+   You can override default aggression level with command line arguments.
+C. Added more lists and distributed everything among the four BLITZ levels.
+
+USAGE:
+        adbhostgen.sh [-? | -h | --help] [-v | --version] [-1] [-2] [-b | --bl=<domain.name>] [-w | --wl=<domain.name>] ...
+
+OPERATION:
+        [-0]                            Safe minimum protection, set BLITZ=0
+        [-1]                            Increased protection, set BLITZ=1
+        [-2]                            Optimum protection, set BLITZ=2, [DEFAULT]
+        [-3]                            Unlock maximum protection, set BLITZ=3
+        [-d | -D]                       Ignore personal lists, set DISTRIB=1
+        [-b | --bl=]    domain.name     Add domain.name to myblacklist
+        [-w | --wl=]    domain.name     Add domain.name to mywhitelist
+        [-p | --pause]                  Pause protection
+        [-r | --resume]                 Resume protection
+        [-r | --offline]                Process existing lists without downloading
+        [-h | --help]                   Display this help screen and exit
+        [-v | --version]                Print adbhostgen.sh version and exit
+
+EXAMPLES:
+        adbhostgen.sh -1 --bl=example1.com --wl=example2.com
+        adbhostgen.sh -b example1.com -w example2.com --wl=example3.com
+
+
+20180312rev1: 
+BUGFIX
 
 20180312:
 A. New command line options to pause and resume protection.
@@ -73,25 +99,6 @@ C. BLITZ=0 is no longer an option.
    BLITZ=1 is the minimum protection level.
    BLITZ=2 mode now blocks approx 675000 unique ad/mal domains. [DEFAULT]
    BLITZ=3 is likely to result in ~40-50MB hosts file. Exercise caution.
-
-USAGE:
-        adbhostgen.sh [-h | -? | --help] [-v | --version] [-z | -1] [-Z | -3] [-b | --bl=<domain.name>] [-w | --wl=<domain.name>]
-
-OPERATION:
-        [-z | -1]                       Safe minimum protection, set BLITZ=1
-        [-O | -2]                       [DEFAULT] optimum protection, set BLITZ=2
-        [-Z | -3]                       Unlock maximum protection, set BLITZ=3
-        [-d | -D]                       Ignore personal lists, set DISTRIB=1
-        [-b | --bl=]    domain.name     Add domain.name to myblacklist
-        [-w | --wl=]    domain.name     Add domain.name to mywhitelist
-        [-p | --pause]                  Pause protection
-        [-r | --resume]                 Resume protection
-        [-h | --help]                   Display this help screen and exit
-        [-v | --version]                Print adbhostgen.sh version and exit
-
-EXAMPLES:
-        adbhostgen.sh -1 --bl=example1.com --wl=example2.com
-        adbhostgen.sh -b example1.com -w example2.com --wl=example3.com
 
 --
 FOR DETAILS AND SCREENSHOTS: https://www.dd-wrt.com/phpBB2/viewtopic.php?t=307533

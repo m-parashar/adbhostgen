@@ -7,7 +7,7 @@ rm installer.sh
 tar czvf adbhostgen.tar.gz README adbhostgen.sh blacklist ca-bundle.crt cacert.pem mpadblock.sh mpcurl mpdomains mphosts whitelist
 
 echo "> Generating installer stub"
-cat << 'EOF' >> installer.sh
+cat << 'EOF' > installer.sh
 #!/bin/sh
 
 echo "======================================================"
