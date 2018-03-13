@@ -60,6 +60,8 @@ time the script is executed.
 
 CHANGELOG:
 ----------
+20180313:
+Minor bugfixes. Official whitelist formatted and updated.
 
 20180312rev2:
 A. added --offline mode, for processing existing lists without re-downloading everything.
