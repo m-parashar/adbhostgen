@@ -11,6 +11,7 @@
 7.googlevideo.com
 a.intgr.net
 a.komoona.com
+aax-eu.amazon-adsystem.com
 aax-us-east.amazon-adsystem.com
 abperfect.com
 ad-g.doubleclick.net
@@ -113,14 +114,11 @@ crashdump.spotify.com
 crashlytics.com
 cs126.wpc.edgecastcdn.net
 d.openx.net
-d1lp05q4sghme9.cloudfront.net
-d4bsxdtgtmhxt.cloudfront.net
 dartsearch.net
 de-odc.samsungapps.com
 de.quasargaming.com
 developed.down.hontamelenton.co.com
 device-api.urbanairship.com
-domains.googlesyndication.com
 doubleclick.com
 doubleclick.net
 doubleclick.shockwave.com
@@ -197,7 +195,6 @@ labs-cdn.revcontent.com
 lapalingo.com
 lijit.com
 localytics.com
-log.spotify.com
 manifest.localytics.com
 marketplace-ios-b68.hyprmx.com
 match.adsrvr.orgtrack.eyeviewads.comrtd.tubemogul.com
@@ -207,7 +204,6 @@ mh.tlootas.org
 mj-tech.motherjones.net
 mm.admob.com
 moatads.com
-mobile.pipe.aria.microsoft.com
 mopub.com
 ms.cmcm.com
 n.targetdtracker.com
@@ -220,10 +216,8 @@ ns.zdbb.net
 nuancemobility.net
 ocsp.comodoca.com
 oem.twimg.com
-ogs.google.com
 ol.at.atwola.com
 ollisbumsblog.com
-omaze.com
 op.ule88.com
 optimaldelivery.org
 outbrain.com
@@ -278,7 +272,6 @@ static.doubleclick.net
 static.www.dacast.com
 stats.appsflyer.com
 stats.g.doubleclick.net
-sto3.spotify.com
 sunnyplayer-frontapi.cherrytech.com
 sync.adap.tv
 sync.bidfluence.com
@@ -315,7 +308,6 @@ us-east.bidswitch.net
 us-knox.secb2b.com
 us-u.openx.net
 vap2iad1.lijit.com
-vas.samsungapps.com
 vast-proxy.hyprmx.com
 video-ad-stats.googlesyndication.com
 video-stats.video.google.com
