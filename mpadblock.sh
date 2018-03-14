@@ -15,27 +15,27 @@ VERSION="20180315"
 
 SELF="$0"
 ARGS="$@"
-UPDATED_VER="/tmp/mpadblock.sh"
+NEWVER="/tmp/mpadblock.sh"
 
 selfUpdate ()
 {
 	if ping -q -c 1 -W 1 google.com >/dev/null; then
-		curl -s -k https://raw.githubusercontent.com/m-parashar/adbhostgen/master/mpadblock.sh > $UPDATED_VER
+		curl -s -k https://raw.githubusercontent.com/m-parashar/adbhostgen/master/mpadblock.sh > $NEWVER
 	fi
 
 	old_md5=`md5sum $SELF | cut -d' ' -f1`
-	new_md5=`md5sum $UPDATED_VER | cut -d' ' -f1`
+	new_md5=`md5sum $NEWVER | cut -d' ' -f1`
 
 	if [ "$old_md5" != "$new_md5" ]; then
 		echo "$(basename $0) version: $VERSION."
 		echo "New version available."
 		echo "Self-updating to the latest version."
-		chmod 755 "$UPDATED_VER"
-		mv "$UPDATED_VER" "$SELF"
+		chmod 755 "$NEWVER"
+		mv "$NEWVER" "$SELF"
 		exec $SELF $ARGS
 		exit 0
 	else
-		rm -f "$UPDATED_VER"
+		rm -f "$NEWVER"
 	fi
 }
 
