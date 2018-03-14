@@ -60,6 +60,15 @@ time the script is executed.
 
 CHANGELOG:
 ----------
+
+20180314:
+Minor bugfixes. Lists with false positives moved to BLITZ=3 section.
+BLITZ=1 is now default, since new users are often uncomfortable with
+finding and whitelisting useful harmless services that may be blocked
+by the higher protection levels.
+
+The script now logs important system events directly into syslog.
+
 20180313:
 Minor bugfixes. Official whitelist formatted and updated.
 
