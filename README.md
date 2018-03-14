@@ -64,6 +64,8 @@ Add your blacklist or whitelist domains to myblacklist and mywhitelist files res
 Do not save anything in blacklist or whitelist files as they will be overwritten every
 time the script is executed.
 
+![cmdline](https://i.imgur.com/Jt3WIUM.png)
+
 FOR DETAILS AND SCREENSHOTS: https://www.dd-wrt.com/phpBB2/viewtopic.php?t=307533
 
 --
@@ -85,8 +87,6 @@ Should work on R7000, R8000 and other >128MB RAM routers too. Any feedback is we
 | BLITZ=0  | 10:16                     |
 
 Status: 
-
-![cmdline](https://i.imgur.com/Jt3WIUM.png)
 
 ![log](https://i.imgur.com/VBaf3If.png)
 
