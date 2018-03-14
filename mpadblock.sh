@@ -11,7 +11,7 @@
 #
 # AUTHOR: Manish Parashar
 
-VERSION="20180314"
+VERSION="20180315"
 
 SELF="$0"
 ARGS="$@"
@@ -90,6 +90,7 @@ myblacklist="${MPDIR}/myblacklist"
 # user's custom whitelist file: a list of whitelisted domains one per line
 mywhitelist="${MPDIR}/mywhitelist"
 
+logger "$(basename "$0") started"
 ###############################################################################
 # enable logging
 if [ "$SELF_LOGGING" != "1" ]; then
@@ -117,7 +118,7 @@ if [ "$SELF_LOGGING" != "1" ]; then
     # Return the error code from the child process
     exit $?
 fi
-logger "$(basename "$0") started"
+
 ###############################################################################
 # resume protection
 protectOn ()
@@ -231,7 +232,7 @@ export CURL_CA_BUNDLE="${MPDIR}/ca-bundle.crt"
 alias MPGET='curl -s -k'
 alias MPGETSSL='curl -s --capath ${MPDIR} --cacert cacert.pem'
 alias MPGETMHK='curl -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/'
-if [ ! -x /usr/bin/curl ] ; then
+if [ -z "$(which curl)" ]; then
 	echo ">>> WARNING: cURL not installed. Using local mpcurl (arm7l)"
 	if [ ! -x ${MPDIR}/mpcurl ] ; then
 		echo ">>> ERROR: ${MPDIR}/mpcurl not found"
@@ -444,7 +445,6 @@ else
 	# process the blacklists and whitelists anyway
 	[ -s $mphosts ] && cat $mphosts | awk '{print $2}' > $tmphosts
 	[ -s $mpdomains ] && cp $mpdomains $tmpdomains
-
 fi
 
 ###############################################################################
