@@ -61,6 +61,38 @@ time the script is executed.
 CHANGELOG:
 ----------
 
+20180315:
+Major update. Code cleanup and bugfixes. Update function added.
+If there are no stopping bugs, minor updates will be rolled out
+directly to Github and users can update to the latest version
+by using the -u or --update command line option. Stable point
+releases with installer will be rolled out as and when there
+are important bugfixes and changes to the codebase.
+
+
+USAGE:
+        adbhostgen.sh [-? | -h | --help] [-v | --version] [-1] [-2] [-b | --bl=<domain.name>] [-w | --wl=<domain.name>] ...
+
+OPERATION:
+        [-0]                            Safe minimum protection, set BLITZ=0
+        [-1]                            Increased protection, set BLITZ=1, [DEFAULT]
+        [-2]                            Optimum protection, set BLITZ=2
+        [-3]                            Unlock maximum protection, set BLITZ=3
+        [-d | -D]                       Ignore personal lists, set DISTRIB=1
+        [-b | --bl=]    domain.name     Add domain.name to myblacklist
+        [-w | --wl=]    domain.name     Add domain.name to mywhitelist
+        [-p | --pause]                  Pause protection
+        [-r | --resume]                 Resume protection
+        [-o | --offline]                Process existing lists without downloading
+        [-h | --help]                   Display this help screen and exit
+        [-u | --update]                 Update adbhostgen.sh to the latest version
+        [-v | --version]                Print adbhostgen.sh version and exit
+
+EXAMPLES:
+        adbhostgen.sh -3 --bl=example1.com --wl=example2.com
+        adbhostgen.sh -b example1.com -w example2.com --wl=example3.com
+
+
 20180314:
 Minor bugfixes. Lists with false positives moved to BLITZ=3 section.
 BLITZ=1 is now default, since new users are often uncomfortable with
@@ -77,28 +109,6 @@ A. added --offline mode, for processing existing lists without re-downloading ev
 B. BLITZ=0 mode is back. Four levels of protection exist now: 0, 1, 2 [default], and 3.
    You can override default aggression level with command line arguments.
 C. Added more lists and distributed everything among the four BLITZ levels.
-
-USAGE:
-        adbhostgen.sh [-? | -h | --help] [-v | --version] [-1] [-2] [-b | --bl=<domain.name>] [-w | --wl=<domain.name>] ...
-
-OPERATION:
-        [-0]                            Safe minimum protection, set BLITZ=0
-        [-1]                            Increased protection, set BLITZ=1
-        [-2]                            Optimum protection, set BLITZ=2, [DEFAULT]
-        [-3]                            Unlock maximum protection, set BLITZ=3
-        [-d | -D]                       Ignore personal lists, set DISTRIB=1
-        [-b | --bl=]    domain.name     Add domain.name to myblacklist
-        [-w | --wl=]    domain.name     Add domain.name to mywhitelist
-        [-p | --pause]                  Pause protection
-        [-r | --resume]                 Resume protection
-        [-r | --offline]                Process existing lists without downloading
-        [-h | --help]                   Display this help screen and exit
-        [-v | --version]                Print adbhostgen.sh version and exit
-
-EXAMPLES:
-        adbhostgen.sh -1 --bl=example1.com --wl=example2.com
-        adbhostgen.sh -b example1.com -w example2.com --wl=example3.com
-
 
 20180312rev1: 
 BUGFIX
