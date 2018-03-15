@@ -189,7 +189,7 @@ printHelp ()
 	printf '\t'; echo -n "[-r | --resume]"; printf '\t\t\t'; echo "Resume protection"
 	printf '\t'; echo -n "[-o | --offline]"; printf '\t\t'; echo "Process existing lists without downloading"
 	printf '\t'; echo -n "[-h | --help]"; printf '\t\t\t'; echo "Display this help screen and exit"
-	printf '\t'; echo -n "[-u | --update]"; printf '\t\t'; echo "Update $(basename "$0") to the latest version"
+	printf '\t'; echo -n "[-u | --update]"; printf '\t\t\t'; echo "Update $(basename "$0") to the latest version"
 	printf '\t'; echo -n "[-v | --version]"; printf '\t\t'; echo "Print $(basename "$0") version and exit"
 	echo ""
 	echo "EXAMPLES:"
