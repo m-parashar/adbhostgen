@@ -64,7 +64,7 @@ Add your blacklist or whitelist domains to myblacklist and mywhitelist files res
 Do not save anything in blacklist or whitelist files as they will be overwritten every
 time the script is executed.
 
-![cmdline](https://i.imgur.com/Jt3WIUM.png)
+![cmdline](https://i.imgur.com/xnvvT4m.png)
 
 FOR DETAILS AND SCREENSHOTS: https://www.dd-wrt.com/phpBB2/viewtopic.php?t=307533
 
