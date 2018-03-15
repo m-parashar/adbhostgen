@@ -214,10 +214,11 @@ selfUpdate ()
 			new_md5=`md5sum $TMPFILE | cut -d' ' -f1`
 
 			if [ "$old_md5" != "$new_md5" ]; then
-				echo ">>> Update available."
+				NEWVER=`grep -w -m 1 "VERSION" $TMPFILE`
+				echo ">>> Update available: $NEWVER"
 				chmod 755 $TMPFILE
-				echo ">>> Updated to the latest version."
 				mv $TMPFILE $0
+				echo ">>> Updated to the latest version."
 			else
 				echo ">>> No updates available."
 			fi
