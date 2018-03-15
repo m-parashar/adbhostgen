@@ -3,15 +3,39 @@
 #
 # Script to generate massive block lists for DD-WRT
 #
+# AUTHOR: Manish Parashar
+#
 # https://github.com/m-parashar/adbhostgen
 # https://gist.github.com/m-parashar/ee38454c27f7a4f4e4ab28249a834ccc
 # https://www.dd-wrt.com/phpBB2/viewtopic.php?t=307533
 #
 # Thanks: Pi-hole, Christopher Vella, Arthur Borsboom, users, and all the list providers.
 #
-# AUTHOR: Manish Parashar
+# Installation:
+# Give the script permissions to execute:
+# chmod +x adbhostgen.sh
+#
+# Add the hosts file and extra configuration to DD-WRT's dnsmasq config via Services -> Additional DNSMasq Options
+# conf-file=/jffs/dnsmasq/mpdomains
+# addn-hosts=/jffs/dnsmasq/mphosts
+#
+# optional:
+# Never forward plain names (without a dot or domain part)
+# domain-needed
+# Never forward addresses in the non-routed address spaces.
+# bogus-priv
+#
+# Log each DNS query as it passes through dnsmasq.
+# log-queries
+# log-facility=/jffs/dnsmasq/dnsmasq.log
+# log-async
+#
+# Go to Administration -> Cron (Sets the script to update itself. Choose your own schedule.)
+# Build the adblock files on MON and THU at 6AM
+# 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
+#
 
-VERSION="20180314"
+VERSION="20180315"
 
 # define aggressiveness: [ 0 | 1 | 2 | 3 ]
 # 0: bare minimum protection from ads and malware
@@ -34,7 +58,11 @@ ONLINE=1
 supermassiveblackhole="0.0.0.0"
 
 # define dnsmasq directory and path
+# needn't be /jffs, could be /opt
+# preferably use a USB drive for this
 MPDIR='/jffs/dnsmasq'
+
+# temporary directory
 TMPDIR='/tmp'
 
 # dnsmasq hosts & domain files
@@ -61,6 +89,28 @@ myblacklist="${MPDIR}/myblacklist"
 
 # user's custom whitelist file: a list of whitelisted domains one per line
 mywhitelist="${MPDIR}/mywhitelist"
+
+# cURL certificates
+export CURL_CA_BUNDLE="${MPDIR}/ca-bundle.crt"
+
+# curl options
+alias MPGET='curl -s -k'
+alias MPGETSSL='curl -s --capath ${MPDIR} --cacert cacert.pem'
+alias MPGETMHK='curl -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/'
+if [ -z "$(which curl)" ]; then
+	echo ">>> WARNING: cURL not installed. Using local mpcurl (arm7l)"
+	if [ ! -x ${MPDIR}/mpcurl ] ; then
+		echo ">>> ERROR: ${MPDIR}/mpcurl not found"
+		echo ">>> ERROR: if file exists, chmod +x it and try again"
+		echo ">>> ERROR: ABORTING"
+		exit 1
+	fi
+	alias MPGET='${MPDIR}/mpcurl -s -k'
+	alias MPGETSSL='${MPDIR}/mpcurl -s --capath ${MPDIR} --cacert cacert.pem'
+	alias MPGETMHK='${MPDIR}/mpcurl -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/'
+fi
+
+logger "$(basename "$0") started"
 
 ###############################################################################
 # enable logging
@@ -89,12 +139,12 @@ if [ "$SELF_LOGGING" != "1" ]; then
     # Return the error code from the child process
     exit $?
 fi
-logger "$(basename "$0") started"
+
 ###############################################################################
 # resume protection
 protectOn ()
 {
-	if [ -f $mphostspaused ] || [ -f $mpdomainspaused ]; then
+	if [ -f $pauseflag ] && { [ -f $mphostspaused ] || [ -f $mpdomainspaused ]; }; then
 		echo ">>> RESUMING PROTECTION"
 		mv $mphostspaused $mphosts
 		mv $mpdomainspaused $mpdomains
@@ -116,52 +166,13 @@ protectOff ()
 	echo "PAUSED" > $pauseflag
 	restart_dns
 	logger "$(basename "$0") restarted dnsmasq"
-	echo "Type $(basename "$0") --resume to resume protection."
+	echo ">>> Type $(basename "$0") --resume to resume protection."
 	exit 0
 }
 
-###############################################################################
-# process command line arguments
-while getopts "h?v0123dDpPrRoOb:w:-:" opt; do
-	case ${opt} in
-		h|\? ) ARG_HELP=true ;;
-		v    ) echo "$VERSION" ; exit 0 ;;
-		0    ) BLITZ=0 ;;
-		1    ) BLITZ=1 ;;
-		2    ) BLITZ=2 ;;
-		3    ) BLITZ=3 ;;
-		d|D  ) DISTRIB=1 ;;
-		p|P  ) protectOff ;;
-		r|R  ) protectOn ;;
-		o|O  ) ONLINE=0 ;;
-		b    ) echo "$OPTARG" >> $myblacklist ;;
-		w    ) echo "$OPTARG" >> $mywhitelist ;;
-		-    ) LONG_OPTARG="${OPTARG#*=}"
-		case $OPTARG in
-			bl=?*   ) ARG_BL="$LONG_OPTARG" ; echo $ARG_BL >> $myblacklist ;;
-			bl*     ) echo ">>> ERROR: no arguments for --$OPTARG option" >&2; exit 2 ;;
-			wl=?*   ) ARG_WL="$LONG_OPTARG" ; echo $ARG_WL >> $mywhitelist ;;
-			wl*     ) echo ">>> ERROR: no arguments for --$OPTARG option" >&2; exit 2 ;;
-			9000    ) BLITZ=9000 ;;
-			help    ) ARG_HELP=true ;;
-			pause   ) protectOff ;;
-			resume  ) protectOn ;;
-			offline ) ONLINE=0 ;;
-			version ) echo "$VERSION" ; exit 0 ;;
-			help* | pause* | resume* | version* | offline* | 9000* )
-					echo ">>> ERROR: no arguments allowed for --$OPTARG option" >&2; exit 2 ;;
-			'' )    break ;; # "--" terminates argument processing
-			* )     echo ">>> ERROR: unsupported option --$OPTARG" >&2; exit 2 ;;
-		esac ;;
-  	  \? ) exit 2 ;;  # getopts already reported the illegal option
-	esac
-done
-
-shift $((OPTIND-1)) # remove parsed options and args from $@ list
-
-###############################################################################
 # print help options
-if test x"${ARG_HELP}" = x"true"; then
+printHelp ()
+{
 	echo ""
 	echo "USAGE:"
 	printf '\t'; echo "$(basename "$0") [-? | -h | --help] [-v | --version] [-1] [-2] [-b | --bl=<domain.name>] [-w | --wl=<domain.name>] ..."
@@ -178,6 +189,7 @@ if test x"${ARG_HELP}" = x"true"; then
 	printf '\t'; echo -n "[-r | --resume]"; printf '\t\t\t'; echo "Resume protection"
 	printf '\t'; echo -n "[-o | --offline]"; printf '\t\t'; echo "Process existing lists without downloading"
 	printf '\t'; echo -n "[-h | --help]"; printf '\t\t\t'; echo "Display this help screen and exit"
+	printf '\t'; echo -n "[-u | --update]"; printf '\t\t'; echo "Update $(basename "$0") to the latest version"
 	printf '\t'; echo -n "[-v | --version]"; printf '\t\t'; echo "Print $(basename "$0") version and exit"
 	echo ""
 	echo "EXAMPLES:"
@@ -185,7 +197,77 @@ if test x"${ARG_HELP}" = x"true"; then
 	printf '\t'; echo "$(basename "$0") -b example1.com -w example2.com --wl=example3.com"
 	echo ""
 	exit 0
-fi
+}
+
+# update to the latest version
+selfUpdate ()
+{
+	TMPFILE="/tmp/mpupdate"
+
+	echo ">>> Checking for updates."
+
+	if ping -q -c 1 -W 1 google.com >/dev/null; then
+		MPGETSSL https://raw.githubusercontent.com/m-parashar/adbhostgen/master/$(basename "$0") > $TMPFILE
+
+		if [ 0 -eq $? ]; then
+			old_md5=`md5sum $SELF | cut -d' ' -f1`
+			new_md5=`md5sum $TMPFILE | cut -d' ' -f1`
+
+			if [ "$old_md5" != "$new_md5" ]; then
+				chmod 755 $TMPFILE
+				echo ">>> Updated to the latest version."
+				mv $TMPFILE $0
+			else
+				echo ">>> No updates available."
+			fi
+		else
+			echo ">>> Update failed. Try again."
+		fi
+		rm -f $TMPFILE
+	fi
+	exit 0
+}
+
+###############################################################################
+# process command line arguments
+while getopts "h?v0123dDpPrRoOuUb:w:-:" opt; do
+	case ${opt} in
+		h|\? ) printHelp ;;
+		v    ) echo "$VERSION" ; exit 0 ;;
+		0    ) BLITZ=0 ;;
+		1    ) BLITZ=1 ;;
+		2    ) BLITZ=2 ;;
+		3    ) BLITZ=3 ;;
+		d|D  ) DISTRIB=1 ;;
+		p|P  ) protectOff ;;
+		r|R  ) protectOn ;;
+		o|O  ) ONLINE=0 ;;
+		u|U  ) selfUpdate ;;
+		b    ) echo "$OPTARG" >> $myblacklist ;;
+		w    ) echo "$OPTARG" >> $mywhitelist ;;
+		-    ) LONG_OPTARG="${OPTARG#*=}"
+		case $OPTARG in
+			bl=?*   ) ARG_BL="$LONG_OPTARG" ; echo $ARG_BL >> $myblacklist ;;
+			bl*     ) echo ">>> ERROR: no arguments for --$OPTARG option" >&2; exit 2 ;;
+			wl=?*   ) ARG_WL="$LONG_OPTARG" ; echo $ARG_WL >> $mywhitelist ;;
+			wl*     ) echo ">>> ERROR: no arguments for --$OPTARG option" >&2; exit 2 ;;
+			9000    ) BLITZ=9000 ;;
+			help    ) printHelp ;;
+			pause   ) protectOff ;;
+			resume  ) protectOn ;;
+			offline ) ONLINE=0 ;;
+			update  ) selfUpdate ;;
+			version ) echo "$VERSION" ; exit 0 ;;
+			help* | pause* | resume* | version* | offline* | update* | 9000* )
+					echo ">>> ERROR: no arguments allowed for --$OPTARG option" >&2; exit 2 ;;
+			'' )    break ;; # "--" terminates argument processing
+			* )     echo ">>> ERROR: unsupported option --$OPTARG" >&2; exit 2 ;;
+		esac ;;
+  	  \? ) exit 2 ;;  # getopts already reported the illegal option
+	esac
+done
+
+shift $((OPTIND-1)) # remove parsed options and args from $@ list
 
 ###############################################################################
 # display banner
@@ -198,27 +280,9 @@ echo "======================================================"
 echo "             `date`"
 echo "# VERSION: $VERSION"
 
-# curl certificates and options
-export CURL_CA_BUNDLE="${MPDIR}/ca-bundle.crt"
-alias MPGET='curl -s -k'
-alias MPGETSSL='curl -s --capath ${MPDIR} --cacert cacert.pem'
-alias MPGETMHK='curl -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/'
-if [ ! -x /usr/bin/curl ] ; then
-	echo ">>> WARNING: cURL not installed. Using local mpcurl (arm7l)"
-	if [ ! -x ${MPDIR}/mpcurl ] ; then
-		echo ">>> ERROR: ${MPDIR}/mpcurl not found"
-		echo ">>> ERROR: if file exists, chmod +x it and try again"
-		echo ">>> ERROR: ABORTING"
-		exit 1
-	fi
-	alias MPGET='${MPDIR}/mpcurl -s -k'
-	alias MPGETSSL='${MPDIR}/mpcurl -s --capath ${MPDIR} --cacert cacert.pem'
-	alias MPGETMHK='${MPDIR}/mpcurl -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/'
-fi
-
 ###############################################################################
 # force resume if user forgets to turn it back on
-if [ -f $mphostspaused ] || [ -f $mpdomainspaused ] || [ -f $pauseflag ] ; then
+if [ -f $pauseflag ] && { [ -f $mphostspaused ] || [ -f $mpdomainspaused ]; }; then
 	echo "# USER FORGOT TO RESUME PROTECTION AFTER PAUSING"
 	echo "> Resuming protection"
 	protectOn
@@ -416,7 +480,6 @@ else
 	# process the blacklists and whitelists anyway
 	[ -s $mphosts ] && cat $mphosts | awk '{print $2}' > $tmphosts
 	[ -s $mpdomains ] && cp $mpdomains $tmpdomains
-
 fi
 
 ###############################################################################
@@ -473,19 +536,4 @@ echo "# Total time: $RTMINUTES:$RTSECONDS minutes"
 echo "# DONE"
 logger "$(basename "$0") finished"
 
-# Give the script permissions to execute:
-# chmod +x adbhostgen.sh
-
-# Add the hosts file and extra configuration to DD-WRT's dnsmasq config via Services -> Additional DNSMasq Options
-# conf-file=/jffs/dnsmasq/mpdomains
-# addn-hosts=/jffs/dnsmasq/mphosts
-#
-# optional:
-# Never forward plain names (without a dot or domain part)
-# domain-needed
-# Never forward addresses in the non-routed address spaces.
-# bogus-priv
-
-# Go to Administration -> Cron (Sets the script to update itself. Choose your own schedule.)
-# Build the mphosts file on MON and THU at 6AM
-# 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
+# FIN
