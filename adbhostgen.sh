@@ -210,10 +210,11 @@ selfUpdate ()
 		MPGETSSL https://raw.githubusercontent.com/m-parashar/adbhostgen/master/$(basename "$0") > $TMPFILE
 
 		if [ 0 -eq $? ]; then
-			old_md5=`md5sum $SELF | cut -d' ' -f1`
+			old_md5=`md5sum $0 | cut -d' ' -f1`
 			new_md5=`md5sum $TMPFILE | cut -d' ' -f1`
 
 			if [ "$old_md5" != "$new_md5" ]; then
+				echo ">>> Update available."
 				chmod 755 $TMPFILE
 				echo ">>> Updated to the latest version."
 				mv $TMPFILE $0
