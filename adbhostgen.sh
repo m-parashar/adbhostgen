@@ -38,6 +38,8 @@
 
 VERSION="20180316rev2"
 
+logger ">>> $(basename "$0") started with options: "$@""
+
 # define aggressiveness: [ 0 | 1 | 2 | 3 ]
 # 0: bare minimum protection from ads and malware
 # 1: toned down, tuxedo wearing ad-slaying professional mode
@@ -115,8 +117,6 @@ if [ -z "$(which curl)" ]; then
 	alias MPGETMHK='${MPDIR}/mpcurl -f -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/'
 fi
 
-logger ">>> $(basename "$0") started with options: "$@""
-
 ###############################################################################
 
 # echo & log
@@ -129,6 +129,7 @@ lognecho ()
 # restart dnsmasq
 restart_dnsmasq ()
 {
+	logger ">>> $(basename "$0") restarting dnsmasq"
 	restart_dns || killall -1 dnsmasq
 	logger ">>> $(basename "$0") restarted dnsmasq"
 }
