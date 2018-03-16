@@ -35,7 +35,7 @@
 # 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
 #
 
-VERSION="20180315"
+VERSION="20180316"
 
 # define aggressiveness: [ 0 | 1 | 2 | 3 ]
 # 0: bare minimum protection from ads and malware
@@ -149,7 +149,7 @@ protectOn ()
 		mv $mphostspaused $mphosts
 		mv $mpdomainspaused $mpdomains
 		rm $pauseflag
-		restart_dns
+		restart_dnsmasq
 		logger "$(basename "$0") restarted dnsmasq"
 		exit 0
 	fi
@@ -164,7 +164,7 @@ protectOff ()
 	echo "" > $mphosts
 	echo "" > $mpdomains
 	echo "PAUSED" > $pauseflag
-	restart_dns
+	restart_dnsmasq
 	logger "$(basename "$0") restarted dnsmasq"
 	echo ">>> Type $(basename "$0") --resume to resume protection."
 	exit 0
@@ -228,6 +228,12 @@ selfUpdate ()
 		rm -f $TMPFILE
 	fi
 	exit 0
+}
+
+# restart dnsmasq
+restart_dnsmasq ()
+{
+	restart_dns || killall -1 dnsmasq && dnsmasq --conf-file=/tmp/dnsmasq.conf
 }
 
 ###############################################################################
@@ -528,7 +534,7 @@ numberOfAdsBlocked=$(cat $mphosts | wc -l | sed 's/^[ \t]*//')
 echo "# Number of ad domains blocked: approx $numberOfAdsBlocked"
 
 echo "> Restarting DNS server (dnsmasq)"
-restart_dns
+restart_dnsmasq
 logger "$(basename "$0") restarted dnsmasq"
 
 TIMERSTOP=`date +%s`
@@ -537,5 +543,5 @@ RTSECONDS=$(( $((TIMERSTOP - TIMERSTART)) %60 ))
 echo "# Total time: $RTMINUTES:$RTSECONDS minutes"
 echo "# DONE"
 logger "$(basename "$0") finished"
-
+exit 0
 # FIN
