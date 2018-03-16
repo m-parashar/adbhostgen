@@ -145,7 +145,8 @@ fi
 # restart dnsmasq
 restart_dnsmasq ()
 {
-	restart_dns || killall -1 dnsmasq && dnsmasq --conf-file=/tmp/dnsmasq.conf
+	restart_dns || killall -1 dnsmasq
+	logger "$(basename "$0") restarted dnsmasq"
 }
 
 # resume protection
@@ -157,7 +158,6 @@ protectOn ()
 		mv $mpdomainspaused $mpdomains
 		rm $pauseflag
 		restart_dnsmasq
-		logger "$(basename "$0") restarted dnsmasq"
 		exit 0
 	fi
 }
@@ -172,7 +172,6 @@ protectOff ()
 	echo "" > $mpdomains
 	echo "PAUSED" > $pauseflag
 	restart_dnsmasq
-	logger "$(basename "$0") restarted dnsmasq"
 	echo ">>> Type $(basename "$0") --resume to resume protection."
 	exit 0
 }
@@ -536,7 +535,6 @@ echo "# Number of ad domains blocked: approx $numberOfAdsBlocked"
 
 echo "> Restarting DNS server (dnsmasq)"
 restart_dnsmasq
-logger "$(basename "$0") restarted dnsmasq"
 
 TIMERSTOP=`date +%s`
 RTMINUTES=$(( $((TIMERSTOP - TIMERSTART)) /60 ))
