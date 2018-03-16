@@ -95,7 +95,7 @@ mywhitelist="${MPDIR}/mywhitelist"
 
 # log file
 MPLOG="${MPDIR}/mphosts.log"
-[ -s $MPLOG ] && rm $MPLOG
+#[ -s $MPLOG ] && rm $MPLOG
 
 ###############################################################################
 
