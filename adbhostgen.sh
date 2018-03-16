@@ -141,6 +141,13 @@ if [ "$SELF_LOGGING" != "1" ]; then
 fi
 
 ###############################################################################
+
+# restart dnsmasq
+restart_dnsmasq ()
+{
+	restart_dns || killall -1 dnsmasq && dnsmasq --conf-file=/tmp/dnsmasq.conf
+}
+
 # resume protection
 protectOn ()
 {
@@ -228,12 +235,6 @@ selfUpdate ()
 		rm -f $TMPFILE
 	fi
 	exit 0
-}
-
-# restart dnsmasq
-restart_dnsmasq ()
-{
-	restart_dns || killall -1 dnsmasq && dnsmasq --conf-file=/tmp/dnsmasq.conf
 }
 
 ###############################################################################
