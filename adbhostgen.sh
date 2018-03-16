@@ -118,6 +118,7 @@ fi
 logger ">>> $(basename "$0") started"
 
 ###############################################################################
+
 # echo & log
 lognecho ()
 {
@@ -142,6 +143,7 @@ protectOn ()
 		rm $pauseflag
 		restart_dnsmasq
 	fi
+	logger ">>> $(basename "$0") finished"
 	exit 0
 }
 
@@ -156,6 +158,7 @@ protectOff ()
 	echo "PAUSED" > $pauseflag
 	restart_dnsmasq
 	echo ">>> Type $(basename "$0") --resume to resume protection."
+	logger ">>> $(basename "$0") finished"
 	exit 0
 }
 
@@ -185,6 +188,7 @@ printHelp ()
 	printf '\t'; echo "$(basename "$0") -3 --bl=example1.com --wl=example2.com"
 	printf '\t'; echo "$(basename "$0") -b example1.com -w example2.com --wl=example3.com"
 	echo ""
+	logger ">>> $(basename "$0") finished"
 	exit 0
 }
 
@@ -216,6 +220,7 @@ selfUpdate ()
 		fi
 		rm -f $TMPFILE
 	fi
+	logger ">>> $(basename "$0") finished"
 	exit 0
 }
 
@@ -225,7 +230,7 @@ selfUpdate ()
 while getopts "h?v0123dDpPrRoOuUb:w:-:" opt; do
 	case ${opt} in
 		h|\? ) printHelp ;;
-		v    ) echo "$VERSION" ; exit 0 ;;
+		v    ) echo "$VERSION" ; logger ">>> $(basename "$0") finished" ; exit 0 ;;
 		0    ) BLITZ=0 ;;
 		1    ) BLITZ=1 ;;
 		2    ) BLITZ=2 ;;
@@ -249,7 +254,7 @@ while getopts "h?v0123dDpPrRoOuUb:w:-:" opt; do
 			resume  ) protectOn ;;
 			offline ) ONLINE=0 ;;
 			update  ) selfUpdate ;;
-			version ) echo "$VERSION" ; exit 0 ;;
+			version ) echo "$VERSION" ; logger ">>> $(basename "$0") finished" ; exit 0 ;;
 			help* | pause* | resume* | version* | offline* | update* | 9000* )
 					echo ">>> ERROR: no arguments allowed for --$OPTARG option" >&2; exit 2 ;;
 			'' )    break ;; # "--" terminates argument processing
