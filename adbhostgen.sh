@@ -115,7 +115,7 @@ if [ -z "$(which curl)" ]; then
 	alias MPGETMHK='${MPDIR}/mpcurl -f -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/'
 fi
 
-logger ">>> $(basename "$0") started with ptions: "$@""
+logger ">>> $(basename "$0") started with options: "$@""
 
 ###############################################################################
 
