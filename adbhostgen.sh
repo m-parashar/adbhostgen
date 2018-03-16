@@ -1,5 +1,5 @@
 #!/bin/sh
-#set -euxo pipefail
+# set -euxo pipefail
 # File: adbhostgen.sh
 #
 # Script to generate massive block lists for DD-WRT
@@ -36,7 +36,7 @@
 # 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
 #
 
-VERSION="20180316rev1"
+VERSION="20180316rev2"
 
 # define aggressiveness: [ 0 | 1 | 2 | 3 ]
 # 0: bare minimum protection from ads and malware
@@ -96,11 +96,12 @@ MPLOG="${MPDIR}/mphosts.log"
 [ -s $MPLOG ] && rm $MPLOG
 
 ###############################################################################
+
 # cURL certificates and options
 export CURL_CA_BUNDLE="${MPDIR}/ca-bundle.crt"
-alias MPGET='curl -s -k'
-alias MPGETSSL='curl -s --capath ${MPDIR} --cacert cacert.pem'
-alias MPGETMHK='curl -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/'
+alias MPGET='curl -f -s -k'
+alias MPGETSSL='curl -f -s --capath ${MPDIR} --cacert cacert.pem'
+alias MPGETMHK='curl -f -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/'
 if [ -z "$(which curl)" ]; then
 	echo ">>> WARNING: cURL not installed. Using local mpcurl (arm7l)"
 	if [ ! -x ${MPDIR}/mpcurl ] ; then
@@ -109,12 +110,12 @@ if [ -z "$(which curl)" ]; then
 		echo ">>> ERROR: ABORTING"
 		exit 1
 	fi
-	alias MPGET='${MPDIR}/mpcurl -s -k'
-	alias MPGETSSL='${MPDIR}/mpcurl -s --capath ${MPDIR} --cacert cacert.pem'
-	alias MPGETMHK='${MPDIR}/mpcurl -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/'
+	alias MPGET='${MPDIR}/mpcurl -f -s -k'
+	alias MPGETSSL='${MPDIR}/mpcurl -f -s --capath ${MPDIR} --cacert cacert.pem'
+	alias MPGETMHK='${MPDIR}/mpcurl -f -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/'
 fi
 
-logger "$(basename "$0") started"
+logger ">>> $(basename "$0") started"
 
 ###############################################################################
 # echo & log
@@ -128,7 +129,7 @@ lognecho ()
 restart_dnsmasq ()
 {
 	restart_dns || killall -1 dnsmasq
-	logger "$(basename "$0") restarted dnsmasq"
+	logger ">>> $(basename "$0") restarted dnsmasq"
 }
 
 # resume protection
@@ -140,8 +141,8 @@ protectOn ()
 		mv $mpdomainspaused $mpdomains
 		rm $pauseflag
 		restart_dnsmasq
-		exit 0
 	fi
+	exit 0
 }
 
 # pause protection
@@ -219,6 +220,7 @@ selfUpdate ()
 }
 
 ###############################################################################
+
 # process command line arguments
 while getopts "h?v0123dDpPrRoOuUb:w:-:" opt; do
 	case ${opt} in
@@ -260,6 +262,7 @@ done
 shift $((OPTIND-1)) # remove parsed options and args from $@ list
 
 ###############################################################################
+
 # display banner
 TIMERSTART=`date +%s`
 lognecho "======================================================"
@@ -271,6 +274,7 @@ lognecho "             `date`"
 lognecho "# VERSION: $VERSION"
 
 ###############################################################################
+
 # force resume if user forgets to turn it back on
 if [ -f $pauseflag ] && { [ -f $mphostspaused ] || [ -f $mpdomainspaused ]; }; then
 	echo "# USER FORGOT TO RESUME PROTECTION AFTER PAUSING"
@@ -279,6 +283,7 @@ if [ -f $pauseflag ] && { [ -f $mphostspaused ] || [ -f $mpdomainspaused ]; }; t
 fi
 
 ###############################################################################
+
 # if internet is accessible, download files
 if [ $ONLINE -eq 1 ] && ping -q -c 1 -W 1 google.com >/dev/null; then
 
@@ -473,6 +478,7 @@ else
 fi
 
 ###############################################################################
+
 # calculate file sizes
 fileSize=`du -h $tmphosts | awk '{print $1}'`
 lognecho "# Size of $tmphosts before formatting: $fileSize"
@@ -523,6 +529,6 @@ RTMINUTES=$(( $((TIMERSTOP - TIMERSTART)) /60 ))
 RTSECONDS=$(( $((TIMERSTOP - TIMERSTART)) %60 ))
 lognecho "# Total time: $RTMINUTES:$RTSECONDS minutes"
 lognecho "# DONE"
-logger "$(basename "$0") finished"
+logger ">>> $(basename "$0") finished"
 exit 0
 # FIN
