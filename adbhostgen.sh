@@ -36,9 +36,9 @@
 # 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
 #
 
-VERSION="20180316rev2"
+VERSION="20180316rev3"
 
-logger ">>> $(basename "$0") started with options: "$@""
+logger ">>> $(basename "$0") started with option: "$@""
 
 # define aggressiveness: [ 0 | 1 | 2 | 3 ]
 # 0: bare minimum protection from ads and malware
@@ -186,7 +186,7 @@ printHelp ()
 	printf '\t'; echo -n "[-v | --version]"; printf '\t\t'; echo "Print $(basename "$0") version and exit"
 	echo ""
 	echo "EXAMPLES:"
-	printf '\t'; echo "$(basename "$0") -3 --bl=example1.com --wl=example2.com"
+	printf '\t'; echo "$(basename "$0") -2 --bl=example1.com --wl=example2.com"
 	printf '\t'; echo "$(basename "$0") -b example1.com -w example2.com --wl=example3.com"
 	echo ""
 	logger ">>> $(basename "$0") finished"
