@@ -25,6 +25,8 @@ Installation:
 
 2. Run adbhostgen.sh in /jffs/dnsmasq
 
+3. Use --update or -u command line option to update to the latest version. [only available since 20180315]
+
 Settings:
 ---------
 
@@ -74,17 +76,17 @@ Should work on R7000, R8000 and other >128MB RAM routers too. Any feedback is we
 
 | mode            | size    | number of domains blocked |
 |-----------------|---------|---------------------------|
-| BLITZ=0 mphosts | 2.7 MB  | ~103332                   |
-| BLITZ=0 mphosts | 9.8 MB  | ~355660                   |
-| BLITZ=0 mphosts | 25.6 MB | ~913386                   |
-| BLITZ=0 mphosts | 34.7 MB | ~1241313                  |
+| BLITZ=0 mphosts | 2.7 MB  | ~103743                   |
+| BLITZ=1 mphosts | 9.9 MB  | ~358430                   |
+| BLITZ=2 mphosts | 25.6 MB | ~866434                   |
+| BLITZ=3 mphosts | 31.9 MB | ~1159037                  |
 
 | mode     | processing time (minutes) |
 |----------|---------------------------|
-| BLITZ=0  |  1:45                     |
-| BLITZ=0  |  3:38                     |
-| BLITZ=0  |  6:32                     |
-| BLITZ=0  | 10:16                     |
+| BLITZ=0  |  1:40                     |
+| BLITZ=1  |  3:50                     |
+| BLITZ=2  |  7:00                     |
+| BLITZ=3  | 10:14                     |
 
 Status: 
 
