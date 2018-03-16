@@ -95,11 +95,28 @@ mywhitelist="${MPDIR}/mywhitelist"
 MPLOG="${MPDIR}/mphosts.log"
 [ -s $MPLOG ] && rm $MPLOG
 
-# cURL certificates
+###############################################################################
+# cURL certificates and options
 export CURL_CA_BUNDLE="${MPDIR}/ca-bundle.crt"
+alias MPGET='curl -s -k'
+alias MPGETSSL='curl -s --capath ${MPDIR} --cacert cacert.pem'
+alias MPGETMHK='curl -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/'
+if [ -z "$(which curl)" ]; then
+	echo ">>> WARNING: cURL not installed. Using local mpcurl (arm7l)"
+	if [ ! -x ${MPDIR}/mpcurl ] ; then
+		echo ">>> ERROR: ${MPDIR}/mpcurl not found"
+		echo ">>> ERROR: if file exists, chmod +x it and try again"
+		echo ">>> ERROR: ABORTING"
+		exit 1
+	fi
+	alias MPGET='${MPDIR}/mpcurl -s -k'
+	alias MPGETSSL='${MPDIR}/mpcurl -s --capath ${MPDIR} --cacert cacert.pem'
+	alias MPGETMHK='${MPDIR}/mpcurl -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/'
+fi
+
+logger "$(basename "$0") started"
 
 ###############################################################################
-
 # echo & log
 lognecho ()
 {
@@ -200,26 +217,6 @@ selfUpdate ()
 	fi
 	exit 0
 }
-
-###############################################################################
-# curl options
-alias MPGET='curl -s -k'
-alias MPGETSSL='curl -s --capath ${MPDIR} --cacert cacert.pem'
-alias MPGETMHK='curl -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/'
-if [ -z "$(which curl)" ]; then
-	echo ">>> WARNING: cURL not installed. Using local mpcurl (arm7l)"
-	if [ ! -x ${MPDIR}/mpcurl ] ; then
-		echo ">>> ERROR: ${MPDIR}/mpcurl not found"
-		echo ">>> ERROR: if file exists, chmod +x it and try again"
-		echo ">>> ERROR: ABORTING"
-		exit 1
-	fi
-	alias MPGET='${MPDIR}/mpcurl -s -k'
-	alias MPGETSSL='${MPDIR}/mpcurl -s --capath ${MPDIR} --cacert cacert.pem'
-	alias MPGETMHK='${MPDIR}/mpcurl -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/'
-fi
-
-logger "$(basename "$0") started"
 
 ###############################################################################
 # process command line arguments
