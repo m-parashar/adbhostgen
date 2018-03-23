@@ -36,7 +36,7 @@
 # 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
 #
 
-VERSION="20180323b1"
+VERSION="20180323b2"
 
 ###############################################################################
 
@@ -69,7 +69,7 @@ fi
 
 ###############################################################################
 
-logger ">>> $(basename "$0") started with option: "$@""
+logger ">>> $(basename "$0") started"
 
 # define aggressiveness: [ 0 | 1 | 2 | 3 ]
 # 0: bare minimum protection from ads and malware
@@ -91,7 +91,7 @@ ONLINE=1
 # secure communication switch
 # if enabled, cURL uses certificates for safe and
 # secure TLS/SSL communication
-SECURE=0
+SECURL=0
 
 # day of week
 DAYOFWEEK=$(date +"%u")
@@ -138,55 +138,12 @@ MPLOG="${MPDIR}/mphosts.log"
 
 ###############################################################################
 
-# process command line arguments
-while getopts "h?v0123dDpPrRoOuUb:w:-:" opt; do
-	case ${opt} in
-		h|\? ) printHelp ;;
-		v    ) echo "$VERSION" ; logger ">>> $(basename "$0") finished" ; exit 0 ;;
-		0    ) BLITZ=0 ;;
-		1    ) BLITZ=1 ;;
-		2    ) BLITZ=2 ;;
-		3    ) BLITZ=3 ;;
-		d|D  ) DISTRIB=1 ;;
-		p|P  ) protectOff ;;
-		r|R  ) protectOn ;;
-		o|O  ) ONLINE=0 ;;
-		u|U  ) selfUpdate ;;
-		b    ) echo "$OPTARG" >> $myblacklist ;;
-		w    ) echo "$OPTARG" >> $mywhitelist ;;
-		-    ) LONG_OPTARG="${OPTARG#*=}"
-		case $OPTARG in
-			bl=?*   ) ARG_BL="$LONG_OPTARG" ; echo $ARG_BL >> $myblacklist ;;
-			bl*     ) echo ">>> ERROR: no arguments for --$OPTARG option" >&2; exit 2 ;;
-			wl=?*   ) ARG_WL="$LONG_OPTARG" ; echo $ARG_WL >> $mywhitelist ;;
-			wl*     ) echo ">>> ERROR: no arguments for --$OPTARG option" >&2; exit 2 ;;
-			9000    ) BLITZ=9000 ;;
-			pause   ) protectOff ;;
-			resume  ) protectOn ;;
-			secure  ) SECURE=1 ;;
-			offline ) ONLINE=0 ;;
-			help    ) printHelp ;;
-			update  ) selfUpdate ;;
-			version ) echo "$VERSION" ; logger ">>> $(basename "$0") finished" ; exit 0 ;;
-			help* | pause* | resume* | version* | offline* | update* | 9000* )
-					echo ">>> ERROR: no arguments allowed for --$OPTARG option" >&2; exit 2 ;;
-			'' )    break ;; # "--" terminates argument processing
-			* )     echo ">>> ERROR: unsupported option --$OPTARG" >&2; exit 2 ;;
-		esac ;;
-  	  \? ) exit 2 ;;  # getopts already reported the illegal option
-	esac
-done
-
-shift $((OPTIND-1)) # remove parsed options and args from $@ list
-
-###############################################################################
-
 # cURL certificates and options
 export CURL_CA_BUNDLE="${MPDIR}/cacert.pem"
-alias MPGET='curl -f -s -k'
-alias MPGETSSL='curl -f -s -k'
-[ SECURE -eq 1 ] && alias MPGETSSL='curl -f -s --capath ${MPDIR} --cacert cacert.pem'
-alias MPGETMHK='curl -f -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/'
+alias MPGET="curl -f -s -k"
+alias MPGETSSL="curl -f -s -k"
+[ $SECURL -eq 1 ] && unalias MPGETSSL && alias MPGETSSL="curl -f -s --capath ${MPDIR} --cacert cacert.pem"
+alias MPGETMHK="curl -f -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/"
 if [ -z "$(which curl)" ]; then
 	echo ">>> WARNING: cURL not installed. Using local mpcurl (armv7l)"
 	if [ ! -x ${MPDIR}/mpcurl ] ; then
@@ -195,10 +152,10 @@ if [ -z "$(which curl)" ]; then
 		echo ">>> ERROR: ABORTING"
 		exit 1
 	fi
-	alias MPGET='${MPDIR}/mpcurl -f -s -k'
-	alias MPGETSSL='${MPDIR}/mpcurl -f -s -k'
-	[ SECURE -eq 1 ] && alias MPGETSSL='${MPDIR}/mpcurl -f -s --capath ${MPDIR} --cacert cacert.pem'
-	alias MPGETMHK='${MPDIR}/mpcurl -f -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/'
+	alias MPGET="${MPDIR}/mpcurl -f -s -k"
+	alias MPGETSSL="${MPDIR}/mpcurl -f -s -k"
+	[ $SECURL -eq 1 ] && unalias MPGETSSL && alias MPGETSSL="${MPDIR}/mpcurl -f -s --capath ${MPDIR} --cacert cacert.pem"
+	alias MPGETMHK="${MPDIR}/mpcurl -f -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/"
 fi
 
 ###############################################################################
@@ -257,7 +214,7 @@ printHelp ()
 	printf '\t'; echo -n "[-w | --wl=]"; printf '\t'; echo -n "domain.name"; printf '\t'; echo "Add domain.name to mywhitelist"
 	printf '\t'; echo -n "[-p | --pause]"; printf '\t\t\t'; echo "Pause protection"
 	printf '\t'; echo -n "[-r | --resume]"; printf '\t\t\t'; echo "Resume protection"
-	printf '\t'; echo -n "[-o | --secure]"; printf '\t\t'; echo "Use cURL CA certs for secure file transfer"
+	printf '\t'; echo -n "[-o | --secure]"; printf '\t\t\t'; echo "Use cURL CA certs for secure file transfer"
 	printf '\t'; echo -n "[-o | --offline]"; printf '\t\t'; echo "Process existing lists without downloading"
 	printf '\t'; echo -n "[-h | --help]"; printf '\t\t\t'; echo "Display this help screen and exit"
 	printf '\t'; echo -n "[-u | --update]"; printf '\t\t\t'; echo "Update $(basename "$0") to the latest version"
@@ -305,6 +262,49 @@ selfUpdate ()
 
 ###############################################################################
 
+# process command line arguments
+while getopts "h?v0123dDpPrRoOuUb:w:-:" opt; do
+	case ${opt} in
+		h|\? ) printHelp ;;
+		v    ) echo "$VERSION" ; logger ">>> $(basename "$0") finished" ; exit 0 ;;
+		0    ) BLITZ=0 ;;
+		1    ) BLITZ=1 ;;
+		2    ) BLITZ=2 ;;
+		3    ) BLITZ=3 ;;
+		d|D  ) DISTRIB=1 ;;
+		p|P  ) protectOff ;;
+		r|R  ) protectOn ;;
+		o|O  ) ONLINE=0 ;;
+		u|U  ) selfUpdate ;;
+		b    ) echo "$OPTARG" >> $myblacklist ;;
+		w    ) echo "$OPTARG" >> $mywhitelist ;;
+		-    ) LONG_OPTARG="${OPTARG#*=}"
+		case $OPTARG in
+			bl=?*   ) ARG_BL="$LONG_OPTARG" ; echo $ARG_BL >> $myblacklist ;;
+			bl*     ) echo ">>> ERROR: no arguments for --$OPTARG option" >&2; exit 2 ;;
+			wl=?*   ) ARG_WL="$LONG_OPTARG" ; echo $ARG_WL >> $mywhitelist ;;
+			wl*     ) echo ">>> ERROR: no arguments for --$OPTARG option" >&2; exit 2 ;;
+			9000    ) BLITZ=9000 ;;
+			pause   ) protectOff ;;
+			resume  ) protectOn ;;
+			secure  ) SECURL=1 ;;
+			offline ) ONLINE=0 ;;
+			help    ) printHelp ;;
+			update  ) selfUpdate ;;
+			version ) echo "$VERSION" ; logger ">>> $(basename "$0") finished" ; exit 0 ;;
+			help* | pause* | resume* | version* | offline* | update* | secure* | 9000* )
+					echo ">>> ERROR: no arguments allowed for --$OPTARG option" >&2; exit 2 ;;
+			'' )    break ;; # "--" terminates argument processing
+			* )     echo ">>> ERROR: unsupported option --$OPTARG" >&2; exit 2 ;;
+		esac ;;
+  	  \? ) exit 2 ;;  # getopts already reported the illegal option
+	esac
+done
+
+shift $((OPTIND-1)) # remove parsed options and args from $@ list
+
+###############################################################################
+
 # display banner
 TIMERSTART=`date +%s`
 echo "======================================================"
@@ -337,7 +337,7 @@ if [ $ONLINE -eq 1 ] && ping -q -c 1 -W 1 google.com >/dev/null; then
 		MPGETSSL --remote-name --time-cond cacert.pem https://curl.haxx.se/ca/cacert.pem
 	fi
 
-	echo "# SECURE [0=NO|1=YES]: $SECURE"
+	echo "# SECURE [0=NO|1=YES]: $SECURL"
 	echo "# BLITZ LEVEL [0|1|2|3]: $BLITZ"
 
 	echo "# Creating mpdomains file"
