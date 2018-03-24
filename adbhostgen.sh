@@ -36,7 +36,7 @@
 # 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
 #
 
-VERSION="20180324a3"
+VERSION="20180324a4"
 
 ###############################################################################
 
@@ -270,7 +270,7 @@ selfUpdate ()
 ###############################################################################
 
 # process command line arguments
-while getopts "h?v0123dDpPrRoOuUb:w:-:" opt; do
+while getopts "h?v0123dDpPrRsSoOuUb:w:-:" opt; do
 	case ${opt} in
 		h|\? ) printHelp ;;
 		v    ) echo "$VERSION" ; logger ">>> $(basename "$0") finished" ; exit 0 ;;
