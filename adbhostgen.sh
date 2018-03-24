@@ -42,8 +42,8 @@ VERSION="20180324a5"
 
 # define aggressiveness: [ 0 | 1 | 2 | 3 ]
 # 0: bare minimum protection from ads and malware
-# 1: toned down, tuxedo wearing ad-slaying professional mode
-# 2: optimum protection [DEFAULT]
+# 1: toned down, tuxedo wearing ad-slaying professional mode [DEFAULT]
+# 2: optimum protection
 # 3: ramped up, stone cold ad-killing maniac mode
 # either change this here or use command line argument
 export BLITZ=1
