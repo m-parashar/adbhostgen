@@ -36,7 +36,7 @@
 # 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
 #
 
-VERSION="20180324a2"
+VERSION="20180324a3"
 
 ###############################################################################
 
@@ -221,7 +221,7 @@ printHelp ()
 	printf '\t'; echo -n "[-w | --wl=]"; printf '\t'; echo -n "domain.name"; printf '\t'; echo "Add domain.name to mywhitelist"
 	printf '\t'; echo -n "[-p | --pause]"; printf '\t\t\t'; echo "Pause protection"
 	printf '\t'; echo -n "[-r | --resume]"; printf '\t\t\t'; echo "Resume protection"
-	printf '\t'; echo -n "[-o | --secure]"; printf '\t\t\t'; echo "Use cURL CA certs for secure file transfer"
+	printf '\t'; echo -n "[-s | --secure]"; printf '\t\t\t'; echo "Use cURL CA certs for secure file transfer"
 	printf '\t'; echo -n "[-o | --offline]"; printf '\t\t'; echo "Process existing lists without downloading"
 	printf '\t'; echo -n "[-h | --help]"; printf '\t\t\t'; echo "Display this help screen and exit"
 	printf '\t'; echo -n "[-u | --update]"; printf '\t\t\t'; echo "Update $(basename "$0") to the latest version"
@@ -281,6 +281,7 @@ while getopts "h?v0123dDpPrRoOuUb:w:-:" opt; do
 		d|D  ) DISTRIB=1 ;;
 		p|P  ) protectOff ;;
 		r|R  ) protectOn ;;
+		s|S  ) SECURL=1 ;;
 		o|O  ) ONLINE=0 ;;
 		u|U  ) selfUpdate ;;
 		b    ) echo "$OPTARG" >> $myblacklist ;;
