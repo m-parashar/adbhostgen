@@ -36,40 +36,9 @@
 # 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
 #
 
-VERSION="20180323b2"
+VERSION="20180324a1"
 
 ###############################################################################
-
-# enable logging
-if [ "$SELF_LOGGING" != "1" ]; then
-    # The parent process will enter this branch and set up logging
-
-    # Create a named piped for logging the child's output
-    PIPE=/tmp/tmp.fifo
-    mkfifo $PIPE
-
-    # Launch the child process without redirected to the named pipe
-    SELF_LOGGING=1 sh $0 $* >$PIPE &
-
-    # Save PID of child process
-    PID=$!
-
-    # Launch tee in a separate process
-    tee $MPLOG <$PIPE &
-
-    # Unlink $PIPE because the parent process no longer needs it
-    rm $PIPE
-
-    # Wait for child process running the rest of this script
-    wait $PID
-
-    # Return the error code from the child process
-    exit $?
-fi
-
-###############################################################################
-
-logger ">>> $(basename "$0") started"
 
 # define aggressiveness: [ 0 | 1 | 2 | 3 ]
 # 0: bare minimum protection from ads and malware
@@ -136,10 +105,47 @@ mywhitelist="${MPDIR}/mywhitelist"
 MPLOG="${MPDIR}/mphosts.log"
 #[ -s $MPLOG ] && rm $MPLOG
 
+# help cron a bit
+SHELL=/bin/sh
+PATH=/bin:/usr/bin:/sbin:/usr/sbin:/jffs/sbin:/jffs/bin:/jffs/usr/sbin:/jffs/usr/bin:/mmc/sbin:/mmc/bin:/mmc/usr/sbin:/mmc/usr/bin:/opt/sbin:/opt/bin:/opt/usr/sbin:/opt/usr/bin:"${MPDIR}"
+LD_LIBRARY_PATH=/lib:/usr/lib:/jffs/lib:/jffs/usr/lib:/jffs/usr/local/lib:/mmc/lib:/mmc/usr/lib:/opt/lib:/opt/usr/lib
+PWD="${MPDIR}"
+
+###############################################################################
+
+# enable logging
+if [ "$SELF_LOGGING" != "1" ]; then
+    # The parent process will enter this branch and set up logging
+
+    # Create a named piped for logging the child's output
+    PIPE=/tmp/tmp.fifo
+    mkfifo $PIPE
+
+    # Launch the child process without redirected to the named pipe
+    SELF_LOGGING=1 sh $0 $* >$PIPE &
+
+    # Save PID of child process
+    PID=$!
+
+    # Launch tee in a separate process
+    tee $MPLOG <$PIPE &
+
+    # Unlink $PIPE because the parent process no longer needs it
+    rm $PIPE
+
+    # Wait for child process running the rest of this script
+    wait $PID
+
+    # Return the error code from the child process
+    exit $?
+fi
+
+logger ">>> $(basename "$0") started"
+
 ###############################################################################
 
 # cURL certificates and options
-export CURL_CA_BUNDLE="${MPDIR}/cacert.pem"
+CURL_CA_BUNDLE="${MPDIR}/cacert.pem"
 alias MPGET="curl -f -s -k"
 alias MPGETSSL="curl -f -s -k"
 [ $SECURL -eq 1 ] && unalias MPGETSSL && alias MPGETSSL="curl -f -s --capath ${MPDIR} --cacert cacert.pem"
