@@ -36,7 +36,7 @@
 # 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
 #
 
-VERSION="20180324a1"
+VERSION="20180324a2"
 
 ###############################################################################
 
@@ -46,70 +46,70 @@ VERSION="20180324a1"
 # 2: optimum protection [DEFAULT]
 # 3: ramped up, stone cold ad-killing maniac mode
 # either change this here or use command line argument
-BLITZ=1
+export BLITZ=1
 
 # distribution mode / defaults switch
 # if set to 1, ignores myblacklist/mywhitelist files
 # DO NOT CHANGE; use command line argument instead
-DISTRIB=0
+export DISTRIB=0
 
 # online/offline mode switch
 # DO NOT CHANGE; use command line argument instead
-ONLINE=1
+export ONLINE=1
 
 # secure communication switch
 # if enabled, cURL uses certificates for safe and
 # secure TLS/SSL communication
-SECURL=0
+export SECURL=0
 
 # day of week
-DAYOFWEEK=$(date +"%u")
+export DAYOFWEEK=$(date +"%u")
 
 # where ads go to die
-supermassiveblackhole="0.0.0.0"
+export supermassiveblackhole="0.0.0.0"
 
 # define dnsmasq directory and path
 # needn't be /jffs, could be /opt
 # preferably use a USB drive for this
-MPDIR="/jffs/dnsmasq"
+export MPDIR="/jffs/dnsmasq"
 
 # temporary directory
-TMPDIR="/tmp"
+export TMPDIR="/tmp"
 
 # dnsmasq hosts & domain files
-mphosts="${MPDIR}/mphosts"
-mphostspaused="${MPDIR}/mphosts.zzz"
-tmphosts="${TMPDIR}/mphosts.tmp"
+export mphosts="${MPDIR}/mphosts"
+export mphostspaused="${MPDIR}/mphosts.zzz"
+export tmphosts="${TMPDIR}/mphosts.tmp"
 
 # temporary dnsmasq hosts & domain files
-mpdomains="${MPDIR}/mpdomains"
-mpdomainspaused="${MPDIR}/mpdomains.zzz"
-tmpdomains="${TMPDIR}/mpdomains.tmp"
+export mpdomains="${MPDIR}/mpdomains"
+export mpdomainspaused="${MPDIR}/mpdomains.zzz"
+export tmpdomains="${TMPDIR}/mpdomains.tmp"
 
 # pause flag
-pauseflag="${MPDIR}/PAUSED"
+export pauseflag="${MPDIR}/PAUSED"
 
 # blacklist file: a list of blacklisted domains one per line
-blacklist="${MPDIR}/blacklist"
+export blacklist="${MPDIR}/blacklist"
 
 # whitelist file: a list of whitelisted domains one per line
-whitelist="${MPDIR}/whitelist"
+export whitelist="${MPDIR}/whitelist"
 
 # user's custom blacklist file: a list of blacklisted domains one per line
-myblacklist="${MPDIR}/myblacklist"
+export myblacklist="${MPDIR}/myblacklist"
 
 # user's custom whitelist file: a list of whitelisted domains one per line
-mywhitelist="${MPDIR}/mywhitelist"
+export mywhitelist="${MPDIR}/mywhitelist"
 
 # log file
-MPLOG="${MPDIR}/mphosts.log"
+export MPLOG="${MPDIR}/mphosts.log"
 #[ -s $MPLOG ] && rm $MPLOG
 
 # help cron a bit
-SHELL=/bin/sh
-PATH=/bin:/usr/bin:/sbin:/usr/sbin:/jffs/sbin:/jffs/bin:/jffs/usr/sbin:/jffs/usr/bin:/mmc/sbin:/mmc/bin:/mmc/usr/sbin:/mmc/usr/bin:/opt/sbin:/opt/bin:/opt/usr/sbin:/opt/usr/bin:"${MPDIR}"
-LD_LIBRARY_PATH=/lib:/usr/lib:/jffs/lib:/jffs/usr/lib:/jffs/usr/local/lib:/mmc/lib:/mmc/usr/lib:/opt/lib:/opt/usr/lib
-PWD="${MPDIR}"
+export SHELL=/bin/sh
+export PATH=/bin:/usr/bin:/sbin:/usr/sbin:/jffs/sbin:/jffs/bin:/jffs/usr/sbin:/jffs/usr/bin:/mmc/sbin:/mmc/bin:/mmc/usr/sbin:/mmc/usr/bin:/opt/sbin:/opt/bin:/opt/usr/sbin:/opt/usr/bin:"${MPDIR}"
+export LD_LIBRARY_PATH=/lib:/usr/lib:/jffs/lib:/jffs/usr/lib:/jffs/usr/local/lib:/mmc/lib:/mmc/usr/lib:/opt/lib:/opt/usr/lib
+export PWD="${MPDIR}"
 
 ###############################################################################
 
@@ -140,12 +140,13 @@ if [ "$SELF_LOGGING" != "1" ]; then
     exit $?
 fi
 
+cd "${MPDIR}"
 logger ">>> $(basename "$0") started"
 
 ###############################################################################
 
 # cURL certificates and options
-CURL_CA_BUNDLE="${MPDIR}/cacert.pem"
+export CURL_CA_BUNDLE="${MPDIR}/cacert.pem"
 alias MPGET="curl -f -s -k"
 alias MPGETSSL="curl -f -s -k"
 [ $SECURL -eq 1 ] && unalias MPGETSSL && alias MPGETSSL="curl -f -s --capath ${MPDIR} --cacert cacert.pem"
