@@ -128,7 +128,7 @@ logger ">>> $(basename "$0") started"
 export CURL_CA_BUNDLE="${MPDIR}/cacert.pem"
 alias MPGET="curl -f -s -k"
 alias MPGETSSL="curl -f -s -k"
-[ $SECURL -eq 1 ] && unalias MPGETSSL && alias MPGETSSL="curl -f -s --capath ${MPDIR} --cacert cacert.pem"
+[ $SECURL -eq 1 ] && unalias MPGETSSL && alias MPGETSSL="curl -f -s --capath ${MPDIR} --cacert $CURL_CA_BUNDLE"
 alias MPGETMHK="curl -f -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/"
 if [ -z "$(which curl)" ]; then
 	echo ">>> WARNING: cURL not installed. Using local mpcurl (armv7l)"
@@ -140,7 +140,7 @@ if [ -z "$(which curl)" ]; then
 	fi
 	alias MPGET="${MPDIR}/mpcurl -f -s -k"
 	alias MPGETSSL="${MPDIR}/mpcurl -f -s -k"
-	[ $SECURL -eq 1 ] && unalias MPGETSSL && alias MPGETSSL="${MPDIR}/mpcurl -f -s --capath ${MPDIR} --cacert cacert.pem"
+	[ $SECURL -eq 1 ] && unalias MPGETSSL && alias MPGETSSL="${MPDIR}/mpcurl -f -s --capath ${MPDIR} --cacert $CURL_CA_BUNDLE"
 	alias MPGETMHK="${MPDIR}/mpcurl -f -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/"
 fi
 
