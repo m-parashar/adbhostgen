@@ -36,7 +36,7 @@
 # 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
 #
 
-VERSION="20180324a6"
+VERSION="20180325a1"
 
 ###############################################################################
 
@@ -157,7 +157,7 @@ lognecho ()
 restart_dnsmasq ()
 {
 	logger ">>> $(basename "$0") restarting dnsmasq"
-	restart_dns || killall -1 dnsmasq
+	restart_dns &
 	logger ">>> $(basename "$0") restarted dnsmasq"
 }
 
