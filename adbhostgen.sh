@@ -10,7 +10,7 @@
 # https://gist.github.com/m-parashar/ee38454c27f7a4f4e4ab28249a834ccc
 # https://www.dd-wrt.com/phpBB2/viewtopic.php?t=307533
 #
-# Thanks: Pi-Hole, Christopher Vella, list providers, and the users.
+# Thanks: Pi-Hole, list providers, and the users.
 #
 # Installation:
 # Give the script permissions to execute:
@@ -36,7 +36,7 @@
 # 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
 #
 
-VERSION="20180325a1"
+VERSION="20180326a1"
 
 ###############################################################################
 
@@ -47,6 +47,11 @@ VERSION="20180325a1"
 # 3: ramped up, stone cold ad-killing maniac mode
 # either change this here or use command line argument
 export BLITZ=1
+
+# block Facebook
+# f: only block Facebook and Messenger services
+# F: block Facebook, Instagram, and WhatsApp
+export NOFB=0
 
 # online/offline mode switch
 # DO NOT CHANGE; use command line argument instead
@@ -202,6 +207,8 @@ printHelp ()
 	printf '\t'; echo -n "[-1]"; printf '\t\t\t\t'; echo "Increased protection, set BLITZ=1, [DEFAULT]"
 	printf '\t'; echo -n "[-2]"; printf '\t\t\t\t'; echo "Optimum protection, set BLITZ=2"
 	printf '\t'; echo -n "[-3]"; printf '\t\t\t\t'; echo "Unlock maximum protection, set BLITZ=3"
+	printf '\t'; echo -n "[-f]"; printf '\t\t\t\t'; echo "Block Facebook and Messenger services"
+	printf '\t'; echo -n "[-F]"; printf '\t\t\t\t'; echo "Block Facebook, Messenger, Instagram, WhatsApp"
 	printf '\t'; echo -n "[-d | -D]"; printf '\t\t\t'; echo "Ignore personal lists, set DISTRIB=1"
 	printf '\t'; echo -n "[-b | --bl=]"; printf '\t'; echo -n "domain.name"; printf '\t'; echo "Add domain.name to myblacklist"
 	printf '\t'; echo -n "[-w | --wl=]"; printf '\t'; echo -n "domain.name"; printf '\t'; echo "Add domain.name to mywhitelist"
@@ -257,7 +264,7 @@ selfUpdate ()
 ###############################################################################
 
 # process command line arguments
-while getopts "h?v0123dDpPqQrRsSoOuUb:w:-:" opt; do
+while getopts "h?v0123fFdDpPqQrRsSoOuUb:w:-:" opt; do
 	case ${opt} in
 		h|\? ) printHelp ;;
 		v    ) echo "$VERSION" ; logger ">>> $(basename "$0") finished" ; exit 0 ;;
@@ -265,6 +272,8 @@ while getopts "h?v0123dDpPqQrRsSoOuUb:w:-:" opt; do
 		1    ) BLITZ=1 ;;
 		2    ) BLITZ=2 ;;
 		3    ) BLITZ=3 ;;
+		f    ) NOFB="f" ;;
+		F    ) NOFB="F" ;;
 		d|D  ) DISTRIB=1 ;;
 		q|Q  ) QUIET=1 ;;
 		p|P  ) protectOff ;;
@@ -317,7 +326,6 @@ lognecho "# VERSION: $VERSION"
 # force resume if user forgets to turn it back on
 if [ -f $pauseflag ] && { [ -f $mphostspaused ] || [ -f $mpdomainspaused ]; }; then
 	lognecho "# USER FORGOT TO RESUME PROTECTION AFTER PAUSING"
-	lognecho "> Resuming protection"
 	protectOn
 fi
 
@@ -407,6 +415,7 @@ if [ $ONLINE -eq 1 ] && ping -q -c 1 -W 1 google.com >/dev/null; then
 		lognecho "> Processing cryptomining and porn lists"
 		MPGETSSL https://raw.githubusercontent.com/Marfjeh/coinhive-block/master/domains | grep -v "#" >> $tmphosts
 		MPGETSSL https://raw.githubusercontent.com/ZeroDot1/CoinBlockerLists/master/hosts | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
 		MPGETSSL https://raw.githubusercontent.com/chadmayfield/my-pihole-blocklists/master/lists/pi_blocklist_porn_top1m.list | grep -v "#" >> $tmphosts
 
 		lognecho "> Processing Easylist & w3kbl lists"
@@ -502,6 +511,16 @@ if [ $ONLINE -eq 1 ] && ping -q -c 1 -W 1 google.com >/dev/null; then
 
 		lognecho "> Processing supermassive porn blocklist"
 		MPGETSSL https://raw.githubusercontent.com/chadmayfield/my-pihole-blocklists/master/lists/pi_blocklist_porn_all.list >> $tmphosts
+	fi
+
+	if [ $NOFB = "f" ]; then
+		lognecho "> Blocking Facebook and Messenger"
+		MPGETSSL https://raw.githubusercontent.com/m-parashar/adbhostgen/master/facebookonly.block >> $tmphosts
+	fi
+
+	if [ $NOFB = "F" ]; then
+		lognecho "> Blocking Facebook, Messenger, Instagram, WhatsApp"
+		MPGETSSL https://raw.githubusercontent.com/m-parashar/adbhostgen/master/facebookall.block >> $tmphosts
 	fi
 
 	lognecho "> Updating official blacklist/whitelist files"
