@@ -36,7 +36,7 @@
 # 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
 #
 
-VERSION="20180326a1"
+VERSION="20180327a1"
 
 ###############################################################################
 
@@ -77,7 +77,7 @@ export DAYOFWEEK=$(date +"%u")
 export DISTRIB=0
 
 # where ads go to die
-export supermassiveblackhole="0.0.0.0"
+export ADHOLEIP="0.0.0.0"
 
 # define dnsmasq directory and path
 # needn't be /jffs, could be /opt
@@ -130,24 +130,17 @@ logger ">>> $(basename "$0") started"
 ###############################################################################
 
 # cURL certificates and options
+if [ -z "$(which curl)" ]; then
+	echo ">>> WARNING: cURL not found"
+	echo ">>> ERROR: ABORTING"
+	exit 1
+fi
+
 export CURL_CA_BUNDLE="${MPDIR}/cacert.pem"
 alias MPGET="curl -f -s -k"
 alias MPGETSSL="curl -f -s -k"
 [ $SECURL -eq 1 ] && unalias MPGETSSL && alias MPGETSSL="curl -f -s --capath ${MPDIR} --cacert $CURL_CA_BUNDLE"
 alias MPGETMHK="curl -f -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/"
-if [ -z "$(which curl)" ]; then
-	echo ">>> WARNING: cURL not installed. Using local mpcurl (armv7l)"
-	if [ ! -x ${MPDIR}/mpcurl ] ; then
-		echo ">>> ERROR: ${MPDIR}/mpcurl not found"
-		echo ">>> ERROR: if file exists, chmod +x it and try again"
-		echo ">>> ERROR: ABORTING"
-		exit 1
-	fi
-	alias MPGET="${MPDIR}/mpcurl -f -s -k"
-	alias MPGETSSL="${MPDIR}/mpcurl -f -s -k"
-	[ $SECURL -eq 1 ] && unalias MPGETSSL && alias MPGETSSL="${MPDIR}/mpcurl -f -s --capath ${MPDIR} --cacert $CURL_CA_BUNDLE"
-	alias MPGETMHK="${MPDIR}/mpcurl -f -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/"
-fi
 
 ###############################################################################
 
@@ -212,6 +205,7 @@ printHelp ()
 	printf '\t'; echo -n "[-d | -D]"; printf '\t\t\t'; echo "Ignore personal lists, set DISTRIB=1"
 	printf '\t'; echo -n "[-b | --bl=]"; printf '\t'; echo -n "domain.name"; printf '\t'; echo "Add domain.name to myblacklist"
 	printf '\t'; echo -n "[-w | --wl=]"; printf '\t'; echo -n "domain.name"; printf '\t'; echo "Add domain.name to mywhitelist"
+	printf '\t'; echo -n "[-i | --ip=]"; printf '\t'; echo -n "ip.ad.dr.ss"; printf '\t'; echo "IP to send ads to, default: $ADHOLEIP"
 	printf '\t'; echo -n "[-q | --quiet]"; printf '\t\t\t'; echo "Print outout to log file only"
 	printf '\t'; echo -n "[-p | --pause]"; printf '\t\t\t'; echo "Pause protection"
 	printf '\t'; echo -n "[-r | --resume]"; printf '\t\t\t'; echo "Resume protection"
@@ -222,8 +216,8 @@ printHelp ()
 	printf '\t'; echo -n "[-v | --version]"; printf '\t\t'; echo "Print $(basename "$0") version and exit"
 	echo ""
 	echo "EXAMPLES:"
-	printf '\t'; echo "$(basename "$0") -2 --bl=example1.com --wl=example2.com"
-	printf '\t'; echo "$(basename "$0") -b example1.com -w example2.com --wl=example3.com"
+	printf '\t'; echo "$(basename "$0") -s2 --ip=127.0.0.1 --bl=example1.com --wl=example2.com"
+	printf '\t'; echo "$(basename "$0") -3Fqs -b example1.com -w example2.com --wl=example3.com"
 	echo ""
 	logger ">>> $(basename "$0") finished"
 	exit 0
@@ -264,7 +258,7 @@ selfUpdate ()
 ###############################################################################
 
 # process command line arguments
-while getopts "h?v0123fFdDpPqQrRsSoOuUb:w:-:" opt; do
+while getopts "h?v0123fFdDpPqQrRsSoOuUb:w:i:-:" opt; do
 	case ${opt} in
 		h|\? ) printHelp ;;
 		v    ) echo "$VERSION" ; logger ">>> $(basename "$0") finished" ; exit 0 ;;
@@ -283,12 +277,15 @@ while getopts "h?v0123fFdDpPqQrRsSoOuUb:w:-:" opt; do
 		u|U  ) selfUpdate ;;
 		b    ) echo "$OPTARG" >> $myblacklist ;;
 		w    ) echo "$OPTARG" >> $mywhitelist ;;
+		i    ) ADHOLEIP="$OPTARG" ;;
 		-    ) LONG_OPTARG="${OPTARG#*=}"
 		case $OPTARG in
 			bl=?*   ) ARG_BL="$LONG_OPTARG" ; echo $ARG_BL >> $myblacklist ;;
 			bl*     ) echo ">>> ERROR: no arguments for --$OPTARG option" >&2; exit 2 ;;
 			wl=?*   ) ARG_WL="$LONG_OPTARG" ; echo $ARG_WL >> $mywhitelist ;;
 			wl*     ) echo ">>> ERROR: no arguments for --$OPTARG option" >&2; exit 2 ;;
+			ip=?*   ) ARG_IP="$LONG_OPTARG" ; ADHOLEIP=$ARG_IP ;;
+			ip*     ) echo ">>> ERROR: no arguments for --$OPTARG option" >&2; exit 2 ;;
 			9000    ) BLITZ=9000 ;;
 			quiet   ) QUIET=1 ;;
 			pause   ) protectOff ;;
@@ -335,20 +332,19 @@ fi
 if [ $ONLINE -eq 1 ] && ping -q -c 1 -W 1 google.com >/dev/null; then
 
 	lognecho "# NETWORK: UP | MODE: ONLINE"
-	lognecho "# Cranking up the ad-slaying engine"
+	lognecho "# IP ADDRESS FOR ADS: $ADHOLEIP"
+	lognecho "# SECURE [0=NO | 1=YES]: $SECURL"
+	lognecho "# BLITZ LEVEL [0|1|2|3]: $BLITZ"
 
 	if [ ! -s cacert.pem ] || { [ "${DAYOFWEEK}" -eq 1 ] || [ "${DAYOFWEEK}" -eq 4 ]; }; then
 		lognecho "> Downloading / updating cURL certificates"
 		MPGETSSL --remote-name --time-cond cacert.pem https://curl.haxx.se/ca/cacert.pem
 	fi
 
-	lognecho "# SECURE [0=NO|1=YES]: $SECURL"
-	lognecho "# BLITZ LEVEL [0|1|2|3]: $BLITZ"
-
 	lognecho "# Creating mpdomains file"
-	MPGETSSL https://raw.githubusercontent.com/oznu/dns-zone-blacklist/master/dnsmasq/dnsmasq.blacklist | sed 's/#.*$//;/^\s*$/d' | grep -v "::" > $tmpdomains
-	MPGETSSL https://raw.githubusercontent.com/notracking/hosts-blocklists/master/domains.txt | sed 's/#.*$//;/^\s*$/d' | grep -v "::" >> $tmpdomains
-	MPGETSSL -d mimetype=plaintext -d hostformat=dnsmasq https://pgl.yoyo.org/adservers/serverlist.php? | sed 's/127.0.0.1/0\.0\.0\.0/' >> $tmpdomains
+	MPGETSSL https://raw.githubusercontent.com/oznu/dns-zone-blacklist/master/dnsmasq/dnsmasq.blacklist | sed 's/#.*$//;/^\s*$/d' | grep -v "::" | sed 's/0.0.0.0$/'$ADHOLEIP'/' > $tmpdomains
+	MPGETSSL https://raw.githubusercontent.com/notracking/hosts-blocklists/master/domains.txt | sed 's/#.*$//;/^\s*$/d' | grep -v "::" | sed 's/0.0.0.0$/'$ADHOLEIP'/' >> $tmpdomains
+	MPGETSSL -d mimetype=plaintext -d hostformat=dnsmasq https://pgl.yoyo.org/adservers/serverlist.php? | sed 's/127.0.0.1$/'$ADHOLEIP'/' >> $tmpdomains
 
 	lognecho "# Creating mphosts file"
 	lognecho "> Processing StevenBlack lists"
@@ -358,10 +354,10 @@ if [ $ONLINE -eq 1 ] && ping -q -c 1 -W 1 google.com >/dev/null; then
 	MPGETSSL https://raw.githubusercontent.com/notracking/hosts-blocklists/master/hostnames.txt | grep -v "::" | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
 
 	lognecho "> Processing Disconnect.me lists"
-	MPGETSSL https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt | sed 's/#.*$//;/^\s*$/d' >> $tmphosts
-	MPGETSSL https://s3.amazonaws.com/lists.disconnect.me/simple_malware.txt | sed 's/#.*$//;/^\s*$/d' >> $tmphosts
-	MPGETSSL https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt | sed 's/#.*$//;/^\s*$/d' >> $tmphosts
-	MPGETSSL https://s3.amazonaws.com/lists.disconnect.me/simple_malvertising.txt | sed 's/#.*$//;/^\s*$/d' >> $tmphosts
+	MPGETSSL https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt | grep -v "#" | sed 's/#.*$//;/^\s*$/d' >> $tmphosts
+	MPGETSSL https://s3.amazonaws.com/lists.disconnect.me/simple_malware.txt | grep -v "#" | sed 's/#.*$//;/^\s*$/d' >> $tmphosts
+	MPGETSSL https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt | grep -v "#" | sed 's/#.*$//;/^\s*$/d' >> $tmphosts
+	MPGETSSL https://s3.amazonaws.com/lists.disconnect.me/simple_malvertising.txt | grep -v "#" | sed 's/#.*$//;/^\s*$/d' >> $tmphosts
 
 	lognecho "> Processing quidsup/notrack lists"
 	MPGETSSL https://raw.githubusercontent.com/quidsup/notrack/master/trackers.txt | sed 's/#.*$//;/^\s*$/d' >> $tmphosts
@@ -560,8 +556,10 @@ if [ $DISTRIB -eq 0 ] && { [ -s "$myblacklist" ] || [ -s "$mywhitelist" ]; }; th
 fi
 
 lognecho "> Processing final mphosts/mpdomains files"
-cat $tmphosts | sed $'s/\r$//' | cat tmpbl - | grep -Fvwf tmpwl | sort -u | sed '/^$/d' | awk -v "IP=$supermassiveblackhole" '{sub(/\r$/,""); print IP" "$0}' > $mphosts
+cat $tmphosts | sed $'s/\r$//' | cat tmpbl - | grep -Fvwf tmpwl | sort -u | sed '/^$/d' | awk -v "IP=$ADHOLEIP" '{sub(/\r$/,""); print IP" "$0}' > $mphosts
 cat $tmpdomains | grep -Fvwf tmpwl | sort -u  > $mpdomains
+sed -i '1d' $mphosts
+sed -i '1d' $mpdomains
 
 lognecho "> Removing temporary files"
 rm $tmphosts
