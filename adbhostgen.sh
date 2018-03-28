@@ -36,7 +36,7 @@
 # 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
 #
 
-VERSION="20180327a1"
+VERSION="20180328a1"
 
 ###############################################################################
 
@@ -77,7 +77,7 @@ export DAYOFWEEK=$(date +"%u")
 export DISTRIB=0
 
 # where ads go to die
-export ADHOLEIP="0.0.0.0"
+export ADHOLEIP="0.0.0.1"
 
 # define dnsmasq directory and path
 # needn't be /jffs, could be /opt
