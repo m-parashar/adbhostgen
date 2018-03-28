@@ -216,7 +216,7 @@ printHelp ()
 	printf '\t'; echo -n "[-v | --version]"; printf '\t\t'; echo "Print $(basename "$0") version and exit"
 	echo ""
 	echo "EXAMPLES:"
-	printf '\t'; echo "$(basename "$0") -s2 --ip=127.0.0.1 --bl=example1.com --wl=example2.com"
+	printf '\t'; echo "$(basename "$0") -s2 --ip=172.31.255.254 --bl=example1.com --wl=example2.com"
 	printf '\t'; echo "$(basename "$0") -3Fqs -b example1.com -w example2.com --wl=example3.com"
 	echo ""
 	logger ">>> $(basename "$0") finished"
