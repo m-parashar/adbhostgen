@@ -559,8 +559,8 @@ fi
 lognecho "> Processing final mphosts/mpdomains files"
 cat $tmphosts | sed $'s/\r$//' | cat tmpbl - | grep -Fvwf tmpwl | sort -u | sed '/^$/d' | awk -v "IP=$ADHOLEIP" '{sub(/\r$/,""); print IP" "$0}' > $mphosts
 cat $tmpdomains | grep -Fvwf tmpwl | sort -u  > $mpdomains
-sed -i '1d' $mphosts
-sed -i '1d' $mpdomains
+sed -n -i '/0.0.0.0/!p' $mphosts
+sed -n -i '/0.0.0.0/!p' $mpdomains
 
 lognecho "> Removing temporary files"
 rm $tmphosts
