@@ -36,7 +36,7 @@
 # 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
 #
 
-VERSION="20180328a2"
+VERSION="20180329a1"
 
 ###############################################################################
 
@@ -115,7 +115,7 @@ export mywhitelist="${MPDIR}/mywhitelist"
 
 # log file
 export MPLOG="${MPDIR}/mphosts.log"
-#[ -s $MPLOG ] && rm $MPLOG
+#[ -s $MPLOG ] && rm -f $MPLOG
 
 # help cron a bit
 export SHELL=/bin/sh
@@ -152,6 +152,12 @@ lognecho ()
 	echo "$1" >> $MPLOG
 }
 
+# print file size
+printFileSize ()
+{
+	lognecho "# Size of $1: `du -h $1 | awk '{print $1}'`"
+}
+
 # restart dnsmasq
 restart_dnsmasq ()
 {
@@ -167,7 +173,7 @@ protectOn ()
 		lognecho ">>> RESUMING PROTECTION"
 		mv $mphostspaused $mphosts
 		mv $mpdomainspaused $mpdomains
-		rm $pauseflag
+		rm -f $pauseflag
 		restart_dnsmasq
 	fi
 	logger ">>> $(basename "$0") finished"
@@ -534,11 +540,9 @@ fi
 
 ###############################################################################
 
-# calculate file sizes
-fileSize=`du -h $tmphosts | awk '{print $1}'`
-lognecho "# Size of $tmphosts before formatting: $fileSize"
-fileSize=`du -h $tmpdomains | awk '{print $1}'`
-lognecho "# Size of $tmpdomains before formatting: $fileSize"
+# calculate and print file sizes
+printFileSize $tmphosts
+printFileSize $tmpdomains
 
 # remove duplicates and extra whitespace, sort alphabetically
 lognecho "> Processing blacklist/whitelist files"
@@ -563,16 +567,14 @@ sed -n -i '/0.0.0.0/!p' $mphosts
 sed -n -i '/0.0.0.0/!p' $mpdomains
 
 lognecho "> Removing temporary files"
-rm $tmphosts
-rm $tmpdomains
-rm tmpbl
-rm tmpwl
+rm -f $tmphosts
+rm -f $tmpdomains
+rm -f tmpbl
+rm -f tmpwl
 
-# calculate file sizes
-fileSize=`du -h $mphosts | awk '{print $1}'`
-lognecho "# Size of $mphosts after formatting: $fileSize"
-fileSize=`du -h $mpdomains | awk '{print $1}'`
-lognecho "# Size of $mpdomains after formatting: $fileSize"
+# calculate and print file sizes
+printFileSize $mphosts
+printFileSize $mpdomains
 
 # Count how many domains/whitelists were added so it can be displayed to the user
 numberOfAdsBlocked=$(cat $mphosts | wc -l | sed 's/^[ \t]*//')
