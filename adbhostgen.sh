@@ -557,14 +557,14 @@ if [ $DISTRIB -eq 0 ] && { [ -s "$myblacklist" ] || [ -s "$mywhitelist" ]; }; th
 	LC_ALL=C cat $myblacklist | sed -r 's/^[[:blank:]]*//; s/[[:blank:]]*$//; /^$/d; /^\s*$/d' | sort -u > tmpmybl && mv tmpmybl $myblacklist
 	LC_ALL=C cat $mywhitelist | sed -r 's/^[[:blank:]]*//; s/[[:blank:]]*$//; /^$/d; /^\s*$/d' | sort -u > tmpmywl && mv tmpmywl $mywhitelist
 	cat $blacklist | cat $myblacklist - > tmpbl
-	cat $whitelist | cat $mywhitelist - | grep -Fvxf $myblacklist > tmpwl
+	cat $whitelist | cat $mywhitelist - | grep -Fvwf $myblacklist > tmpwl
 fi
 
 # trim leading and trailig whitespace, delete all blank lines including the ones with whitespace
 # remove non-printable non-ASCII characters because DD-WRT dnsmasq throws "bad name at line n" errors
 # merge blacklists with other lists and remove whitelist entries from the stream
 lognecho "> Processing final mphosts/mpdomains files"
-LC_ALL=C cat $tmphosts | sed -r 's/^[[:blank:]]*//; s/[[:blank:]]*$//; /^$/d; /^\s*$/d' | tr -cd '\000-\177' | cat tmpbl - | grep -Fvxf tmpwl | sort -u | awk -v "IP=$ADHOLEIP" '{sub(/\r$/,""); print IP" "$0}' > $mphosts
+LC_ALL=C cat $tmphosts | sed -r 's/^[[:blank:]]*//; s/[[:blank:]]*$//; /^$/d; /^\s*$/d' | tr -cd '\000-\177' | cat tmpbl - | grep -Fvwf tmpwl | sort -u | awk -v "IP=$ADHOLEIP" '{sub(/\r$/,""); print IP" "$0}' > $mphosts
 LC_ALL=C cat $tmpdomains | sed -r 's/^[[:blank:]]*//; s/[[:blank:]]*$//; /^$/d; /^\s*$/d' | tr -cd '\000-\177' | grep -Fvwf tmpwl | sort -u > $mpdomains
 
 lognecho "> Removing temporary files"
