@@ -10,7 +10,7 @@
 # https://gist.github.com/m-parashar/ee38454c27f7a4f4e4ab28249a834ccc
 # https://www.dd-wrt.com/phpBB2/viewtopic.php?t=307533
 #
-# Thanks: Pi-Hole, list providers, and the users.
+# Thanks: List providers and users.
 #
 # Installation:
 # Give the script permissions to execute:
@@ -36,7 +36,7 @@
 # 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
 #
 
-VERSION="20180329a1"
+VERSION="20180329a2"
 
 ###############################################################################
 
@@ -349,162 +349,162 @@ if [ $ONLINE -eq 1 ] && ping -q -c 1 -W 1 google.com >/dev/null; then
 	fi
 
 	lognecho "# Creating mpdomains file"
-	MPGETSSL https://raw.githubusercontent.com/oznu/dns-zone-blacklist/master/dnsmasq/dnsmasq.blacklist | sed 's/#.*$//;/^\s*$/d' | grep -v "::" | sed 's/0.0.0.0$/'$ADHOLEIP'/' > $tmpdomains
-	MPGETSSL https://raw.githubusercontent.com/notracking/hosts-blocklists/master/domains.txt | sed 's/#.*$//;/^\s*$/d' | grep -v "::" | sed 's/0.0.0.0$/'$ADHOLEIP'/' >> $tmpdomains
-	MPGETSSL -d mimetype=plaintext -d hostformat=dnsmasq https://pgl.yoyo.org/adservers/serverlist.php? | sed 's/127.0.0.1$/'$ADHOLEIP'/' >> $tmpdomains
+	MPGETSSL https://raw.githubusercontent.com/oznu/dns-zone-blacklist/master/dnsmasq/dnsmasq.blacklist | grep -o '^[^#]*' | grep -v "::" | sed 's/0.0.0.0$/'$ADHOLEIP'/' > $tmpdomains
+	MPGETSSL https://raw.githubusercontent.com/notracking/hosts-blocklists/master/domains.txt | grep -o '^[^#]*' | grep -v "::" | sed 's/0.0.0.0$/'$ADHOLEIP'/' >> $tmpdomains
+	MPGETSSL -d mimetype=plaintext -d hostformat=dnsmasq https://pgl.yoyo.org/adservers/serverlist.php? | grep -o '^[^#]*' | grep -v "::" | sed 's/127.0.0.1$/'$ADHOLEIP'/' >> $tmpdomains
 
 	lognecho "# Creating mphosts file"
 	lognecho "> Processing StevenBlack lists"
-	MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' > $tmphosts
+	MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts | grep -o '^[^#]*' | awk '{print $2}' > $tmphosts
 
 	lognecho "> Processing notracking blocklists"
-	MPGETSSL https://raw.githubusercontent.com/notracking/hosts-blocklists/master/hostnames.txt | grep -v "::" | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
+	MPGETSSL https://raw.githubusercontent.com/notracking/hosts-blocklists/master/hostnames.txt | grep -o '^[^#]*' | grep -v "::" | awk '{print $2}' >> $tmphosts
 
 	lognecho "> Processing Disconnect.me lists"
-	MPGETSSL https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt | grep -v "#" | sed 's/#.*$//;/^\s*$/d' >> $tmphosts
-	MPGETSSL https://s3.amazonaws.com/lists.disconnect.me/simple_malware.txt | grep -v "#" | sed 's/#.*$//;/^\s*$/d' >> $tmphosts
-	MPGETSSL https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt | grep -v "#" | sed 's/#.*$//;/^\s*$/d' >> $tmphosts
-	MPGETSSL https://s3.amazonaws.com/lists.disconnect.me/simple_malvertising.txt | grep -v "#" | sed 's/#.*$//;/^\s*$/d' >> $tmphosts
+	MPGETSSL https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt | grep -o '^[^#]*' >> $tmphosts
+	MPGETSSL https://s3.amazonaws.com/lists.disconnect.me/simple_malware.txt | grep -o '^[^#]*' >> $tmphosts
+	MPGETSSL https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt | grep -o '^[^#]*' >> $tmphosts
+	MPGETSSL https://s3.amazonaws.com/lists.disconnect.me/simple_malvertising.txt | grep -o '^[^#]*' >> $tmphosts
 
 	lognecho "> Processing quidsup/notrack lists"
-	MPGETSSL https://raw.githubusercontent.com/quidsup/notrack/master/trackers.txt | sed 's/#.*$//;/^\s*$/d' >> $tmphosts
-	MPGETSSL https://raw.githubusercontent.com/quidsup/notrack/master/malicious-sites.txt | sed 's/#.*$//;/^\s*$/d' >> $tmphosts
+	MPGETSSL https://raw.githubusercontent.com/quidsup/notrack/master/trackers.txt | grep -o '^[^#]*' >> $tmphosts
+	MPGETSSL https://raw.githubusercontent.com/quidsup/notrack/master/malicious-sites.txt | grep -o '^[^#]*' >> $tmphosts
 
 	lognecho "> Processing MalwareDomains lists"
-	MPGETSSL https://mirror1.malwaredomains.com/files/justdomains >> $tmphosts
-	MPGETSSL https://mirror1.malwaredomains.com/files/immortal_domains.txt | grep -v "#" >> $tmphosts
+	MPGETSSL https://mirror1.malwaredomains.com/files/justdomains | grep -o '^[^#]*' >> $tmphosts
+	MPGETSSL https://mirror1.malwaredomains.com/files/immortal_domains.txt | grep -o '^[^#]*' >> $tmphosts
 
 	lognecho "> Processing abuse.ch blocklists"
-	MPGETSSL https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist | grep -v "#" >> $tmphosts
+	MPGETSSL https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist | grep -o '^[^#]*' >> $tmphosts
 
 	lognecho "> Processing Ransomware blocklists"
-	MPGETSSL https://ransomwaretracker.abuse.ch/downloads/RW_DOMBL.txt | grep -v "#" >> $tmphosts
-	MPGETSSL https://ransomwaretracker.abuse.ch/downloads/CW_C2_DOMBL.txt | grep -v "#" >> $tmphosts
-	MPGETSSL https://ransomwaretracker.abuse.ch/downloads/LY_C2_DOMBL.txt | grep -v "#" >> $tmphosts
-	MPGETSSL https://ransomwaretracker.abuse.ch/downloads/TC_C2_DOMBL.txt | grep -v "#" >> $tmphosts
+	MPGETSSL https://ransomwaretracker.abuse.ch/downloads/RW_DOMBL.txt | grep -o '^[^#]*' >> $tmphosts
+	MPGETSSL https://ransomwaretracker.abuse.ch/downloads/CW_C2_DOMBL.txt | grep -o '^[^#]*' >> $tmphosts
+	MPGETSSL https://ransomwaretracker.abuse.ch/downloads/LY_C2_DOMBL.txt | grep -o '^[^#]*' >> $tmphosts
+	MPGETSSL https://ransomwaretracker.abuse.ch/downloads/TC_C2_DOMBL.txt | grep -o '^[^#]*' >> $tmphosts
 
 	lognecho "> Processing adaway list"
-	MPGETSSL https://adaway.org/hosts.txt | grep -v "::1" | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
+	MPGETSSL https://adaway.org/hosts.txt | grep -o '^[^#]*' | grep -v "::" | awk '{print $2}' >> $tmphosts
 
 	if [ $BLITZ -ge 1 ]; then
 		lognecho "# Unlocking BLITZ=1 level lists"
 
 		lognecho "> Processing more StevenBlack lists"
-		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/data/tyzbit/hosts | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/data/add.2o7Net/hosts | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/data/add.Risk/hosts | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/data/add.Spam/hosts | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/data/tyzbit/hosts | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/data/add.2o7Net/hosts | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/data/add.Risk/hosts | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/data/add.Spam/hosts | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
 
 		lognecho "> Processing hosts-file ATS/EXP/GRM lists"
-		MPGETSSL https://hosts-file.net/ad_servers.txt | grep -v "::1" | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://hosts-file.net/exp.txt | grep -v "::1" | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://hosts-file.net/grm.txt | grep -v "::1" | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://hosts-file.net/ad_servers.txt | grep -o '^[^#]*' | grep -v "::" | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://hosts-file.net/exp.txt | grep -o '^[^#]*' | grep -v "::" | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://hosts-file.net/grm.txt | grep -o '^[^#]*' | grep -v "::" | awk '{print $2}' >> $tmphosts
 
 		lognecho "> Processing hosts-file HJK/PUP lists"
-		MPGETSSL https://hosts-file.net/hjk.txt | grep -v "::1" | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://hosts-file.net/pup.txt | grep -v "::1" | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://hosts-file.net/hjk.txt | grep -o '^[^#]*' | grep -v "::" | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://hosts-file.net/pup.txt | grep -o '^[^#]*' | grep -v "::" | awk '{print $2}' >> $tmphosts
 
 		lognecho "> Processing dshield lists"
-		MPGETSSL https://www.dshield.org/feeds/suspiciousdomains_High.txt | grep -v "#" >> $tmphosts
-		MPGETSSL https://www.dshield.org/feeds/suspiciousdomains_Medium.txt | grep -v "#" >> $tmphosts
-		MPGETSSL https://www.dshield.org/feeds/suspiciousdomains_Low.txt | grep -v "#" >> $tmphosts
+		MPGETSSL https://www.dshield.org/feeds/suspiciousdomains_High.txt | grep -o '^[^#]*' >> $tmphosts
+		MPGETSSL https://www.dshield.org/feeds/suspiciousdomains_Medium.txt | grep -o '^[^#]*' >> $tmphosts
+		MPGETSSL https://www.dshield.org/feeds/suspiciousdomains_Low.txt | grep -o '^[^#]*' >> $tmphosts
 
 		lognecho "> Processing pgl.yoyo.org list"
-		MPGETSSL -d mimetype=plaintext -d hostformat=unixhosts https://pgl.yoyo.org/adservers/serverlist.php? | grep -v "#" | awk '{print $2}' >> $tmphosts
+		MPGETSSL -d mimetype=plaintext -d hostformat=unixhosts https://pgl.yoyo.org/adservers/serverlist.php? | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
 
 		lognecho "> Processing Securemecca list"
-		MPGETSSL https://hostsfile.org/Downloads/hosts.txt | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://hostsfile.org/Downloads/hosts.txt | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
 
 		lognecho "> Processing cryptomining and porn lists"
-		MPGETSSL https://raw.githubusercontent.com/Marfjeh/coinhive-block/master/domains | grep -v "#" >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/ZeroDot1/CoinBlockerLists/master/hosts | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/chadmayfield/my-pihole-blocklists/master/lists/pi_blocklist_porn_top1m.list | grep -v "#" >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/Marfjeh/coinhive-block/master/domains | grep -o '^[^#]*' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/ZeroDot1/CoinBlockerLists/master/hosts | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/chadmayfield/my-pihole-blocklists/master/lists/pi_blocklist_porn_top1m.list | grep -o '^[^#]*' >> $tmphosts
 
 		lognecho "> Processing Easylist & w3kbl lists"
-		MPGETSSL https://v.firebog.net/hosts/AdguardDNS.txt | grep -v "#" >> $tmphosts
-		MPGETSSL https://v.firebog.net/hosts/Airelle-hrsk.txt | grep -v "#" >> $tmphosts
-		MPGETSSL https://v.firebog.net/hosts/Airelle-trc.txt | grep -v "#" >> $tmphosts
-		MPGETSSL https://v.firebog.net/hosts/BillStearns.txt | grep -v "#" >> $tmphosts
-		MPGETSSL https://v.firebog.net/hosts/Easylist.txt | grep -v "#" >> $tmphosts
-		MPGETSSL https://v.firebog.net/hosts/Easyprivacy.txt | grep -v "#" >> $tmphosts
-		MPGETSSL https://v.firebog.net/hosts/Prigent-Ads.txt | grep -v "#" >> $tmphosts
-		MPGETSSL https://v.firebog.net/hosts/Prigent-Malware.txt | grep -v "#" >> $tmphosts
-		MPGETSSL https://v.firebog.net/hosts/Prigent-Phishing.txt | grep -v "#" >> $tmphosts
-		MPGETSSL https://v.firebog.net/hosts/Shalla-mal.txt | grep -v "#" >> $tmphosts
-		MPGETSSL https://v.firebog.net/hosts/static/SamsungSmart.txt | grep -v "#" >> $tmphosts
-		MPGETSSL https://v.firebog.net/hosts/static/w3kbl.txt | sed -e 's/#.*$//;/^\s*$/d' >> $tmphosts
+		MPGETSSL https://v.firebog.net/hosts/AdguardDNS.txt | grep -o '^[^#]*' >> $tmphosts
+		MPGETSSL https://v.firebog.net/hosts/Airelle-hrsk.txt | grep -o '^[^#]*' >> $tmphosts
+		MPGETSSL https://v.firebog.net/hosts/Airelle-trc.txt | grep -o '^[^#]*' >> $tmphosts
+		MPGETSSL https://v.firebog.net/hosts/BillStearns.txt | grep -o '^[^#]*' >> $tmphosts
+		MPGETSSL https://v.firebog.net/hosts/Easylist.txt | grep -o '^[^#]*' >> $tmphosts
+		MPGETSSL https://v.firebog.net/hosts/Easyprivacy.txt | grep -o '^[^#]*' >> $tmphosts
+		MPGETSSL https://v.firebog.net/hosts/Prigent-Ads.txt | grep -o '^[^#]*' >> $tmphosts
+		MPGETSSL https://v.firebog.net/hosts/Prigent-Malware.txt | grep -o '^[^#]*' >> $tmphosts
+		MPGETSSL https://v.firebog.net/hosts/Prigent-Phishing.txt | grep -o '^[^#]*' >> $tmphosts
+		MPGETSSL https://v.firebog.net/hosts/Shalla-mal.txt | grep -o '^[^#]*' >> $tmphosts
+		MPGETSSL https://v.firebog.net/hosts/static/SamsungSmart.txt | grep -o '^[^#]*' >> $tmphosts
+		MPGETSSL https://v.firebog.net/hosts/static/w3kbl.txt | grep -o '^[^#]*' >> $tmphosts
 	fi
 
 	if [ $BLITZ -ge 2 ]; then
 		lognecho "# Unlocking BLITZ=2 level lists"
 
 		lognecho "> Processing even more StevenBlack lists"
-		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/data/KADhosts/hosts | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/data/UncheckyAds/hosts | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/data/KADhosts/hosts | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/data/UncheckyAds/hosts | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
 
 		lognecho "> Processing hosts-file EMD/FSA lists"
-		MPGETSSL https://hosts-file.net/emd.txt | grep -v "::1" | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://hosts-file.net/fsa.txt | grep -v "::1" | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://hosts-file.net/emd.txt | grep -o '^[^#]*' | grep -v "::" | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://hosts-file.net/fsa.txt | grep -o '^[^#]*' | grep -v "::" | awk '{print $2}' >> $tmphosts
 
 		lognecho "> Processing hosts-file MMT/PHA lists"
-		MPGETSSL https://hosts-file.net/mmt.txt | grep -v "::1" | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://hosts-file.net/pha.txt | grep -v "::1" | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://hosts-file.net/mmt.txt | grep -o '^[^#]*' | grep -v "::" | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://hosts-file.net/pha.txt | grep -o '^[^#]*' | grep -v "::" | awk '{print $2}' >> $tmphosts
 
 		lognecho "> Processing Cameleon list"
-		MPGET http://sysctl.org/cameleon/hosts | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
+		MPGET http://sysctl.org/cameleon/hosts | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
 
 		lognecho "> Processing winhelp2002 list"
-		MPGET http://winhelp2002.mvps.org/hosts.txt | grep -v "::1" | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
+		MPGET http://winhelp2002.mvps.org/hosts.txt | grep -o '^[^#]*' | grep -v "::" | awk '{print $2}' >> $tmphosts
 
 		lognecho "> Processing someonewhocares list"
-		MPGET http://someonewhocares.org/hosts/zero/hosts | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
+		MPGET http://someonewhocares.org/hosts/zero/hosts | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
 
 		lognecho "> Processing anudeepND lists"
-		MPGETSSL https://raw.githubusercontent.com/anudeepND/blacklist/master/adservers.txt | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/anudeepND/blacklist/master/CoinMiner.txt | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/anudeepND/youtubeadsblacklist/master/domainlist.txt | grep -v "#" >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/anudeepND/blacklist/master/adservers.txt | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/anudeepND/blacklist/master/CoinMiner.txt | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/anudeepND/youtubeadsblacklist/master/domainlist.txt | grep -o '^[^#]*' >> $tmphosts
 
 		lognecho "> Processing CHEF-KOCH lists"
-		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/WebRTC-tracking/master/WebRTC.txt | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/Spotify-Ad-free/master/Spotifynulled.txt | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/Audio-fingerprint-pages/master/AudioFp.txt | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/Canvas-fingerprinting-pages/master/Canvas.txt | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/Canvas-Font-Fingerprinting-pages/master/Canvas.txt | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/WebRTC-tracking/master/WebRTC.txt | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/Spotify-Ad-free/master/Spotifynulled.txt | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/Audio-fingerprint-pages/master/AudioFp.txt | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/Canvas-fingerprinting-pages/master/Canvas.txt | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/Canvas-Font-Fingerprinting-pages/master/Canvas.txt | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
 
 		lognecho "> Processing joewein.de LLC list"
-		MPGETSSL https://www.joewein.net/dl/bl/dom-bl-base.txt | grep -v "#" >> $tmphosts
+		MPGETSSL https://www.joewein.net/dl/bl/dom-bl-base.txt | grep -o '^[^#]*' >> $tmphosts
 
 		lognecho "> Processing Windows telemetry lists"
-		MPGETSSL https://raw.githubusercontent.com/tyzbit/hosts/master/data/tyzbit/hosts | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/crazy-max/WindowsSpyBlocker/master/data/hosts/win10/spy.txt | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/tyzbit/hosts/master/data/tyzbit/hosts | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/crazy-max/WindowsSpyBlocker/master/data/hosts/win10/spy.txt | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
 
 		lognecho "> Processing a few more blocklists"
-		MPGETSSL https://raw.githubusercontent.com/vokins/yhosts/master/hosts | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/mitchellkrogza/Badd-Boyz-Hosts/master/hosts | grep -v "::1" | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/piwik/referrer-spam-blacklist/master/spammers.txt | grep -v "#" >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/HenningVanRaumle/pihole-ytadblock/master/ytadblock.txt | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/vokins/yhosts/master/hosts | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/mitchellkrogza/Badd-Boyz-Hosts/master/hosts | grep -o '^[^#]*' | grep -v "::" | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/piwik/referrer-spam-blacklist/master/spammers.txt | grep -o '^[^#]*' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/HenningVanRaumle/pihole-ytadblock/master/ytadblock.txt | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
 	fi
 
 	if [ $BLITZ -ge 3 ]; then
 		lognecho "# Unlocking BLITZ=3 level lists"
 
 		lognecho "> Processing hosts-file PSH/PUP/WRZ lists"
-		MPGETSSL https://hosts-file.net/psh.txt | grep -v "::1" | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://hosts-file.net/wrz.txt | grep -v "::1" | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://hosts-file.net/psh.txt | grep -o '^[^#]*' | grep -v "::" | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://hosts-file.net/wrz.txt | grep -o '^[^#]*' | grep -v "::" | awk '{print $2}' >> $tmphosts
 
 		lognecho "> Processing Mahakala list"
-		MPGETMHK http://adblock.mahakala.is/hosts | grep -v "#" | awk '{print $2}' >> $tmphosts
+		MPGETMHK http://adblock.mahakala.is/hosts | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
 
 		lognecho "> Processing HostsFile.mine.nu list"
-		MPGETSSL https://hostsfile.mine.nu/hosts0.txt | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://hostsfile.mine.nu/hosts0.txt | grep -o '^[^#]*' | awk '{print $2}' >> $tmphosts
 
 		lognecho "> Processing Kowabit list"
-		MPGETSSL https://v.firebog.net/hosts/Kowabit.txt | grep -v "#" >> $tmphosts
+		MPGETSSL https://v.firebog.net/hosts/Kowabit.txt | grep -o '^[^#]*' >> $tmphosts
 
 		lognecho "> Processing ADZHOSTS list"
-		MPGETSSL https://adzhosts.fr/hosts/adzhosts-mac-linux.txt | grep -v "::1" | sed 's/#.*$//;/^\s*$/d' | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://adzhosts.fr/hosts/adzhosts-mac-linux.txt | grep -o '^[^#]*' | grep -v "::" | awk '{print $2}' >> $tmphosts
 	fi
 
 	if [ $BLITZ -eq 9000 ]; then
@@ -527,8 +527,8 @@ if [ $ONLINE -eq 1 ] && ping -q -c 1 -W 1 google.com >/dev/null; then
 	fi
 
 	lognecho "> Updating official blacklist/whitelist files"
-	MPGETSSL https://raw.githubusercontent.com/m-parashar/adbhostgen/master/blacklist | grep -v "#" > $blacklist
-	MPGETSSL https://raw.githubusercontent.com/m-parashar/adbhostgen/master/whitelist | grep -v "#" > $whitelist
+	MPGETSSL https://raw.githubusercontent.com/m-parashar/adbhostgen/master/blacklist | grep -o '^[^#]*' > $blacklist
+	MPGETSSL https://raw.githubusercontent.com/m-parashar/adbhostgen/master/whitelist | grep -o '^[^#]*' > $whitelist
 
 else
 	lognecho "# NETWORK: DOWN | MODE: OFFLINE"
@@ -546,25 +546,26 @@ printFileSize $tmpdomains
 
 # remove duplicates and extra whitespace, sort alphabetically
 lognecho "> Processing blacklist/whitelist files"
-sed -r 's/^\s*//; s/\s*$//; /^$/d' $blacklist | sort -u > tmpbl && cp tmpbl $blacklist
-sed -r 's/^\s*//; s/\s*$//; /^$/d' $whitelist | sort -u > tmpwl && cp tmpwl $whitelist
+LC_ALL=C cat $blacklist | sed 's/^ *//; s/ *$//; /^$/d; /^\s*$/d' | sort -u > tmpbl && cp tmpbl $blacklist
+LC_ALL=C cat $whitelist | sed 's/^ *//; s/ *$//; /^$/d; /^\s*$/d' | sort -u > tmpwl && cp tmpwl $whitelist
 
 # if not building for distribution, process myblacklist and mywhitelist files
 # remove duplicates and extra whitespace, sort alphabetically
 # and allow users' myblacklist precedence over defaults
 if [ $DISTRIB -eq 0 ] && { [ -s "$myblacklist" ] || [ -s "$mywhitelist" ]; }; then
 	lognecho "> Processing myblacklist/mywhitelist files"
-	sed -r 's/^\s*//; s/\s*$//; /^$/d' $myblacklist | sort -u > tmpmybl && mv tmpmybl $myblacklist
-	sed -r 's/^\s*//; s/\s*$//; /^$/d' $mywhitelist | sort -u > tmpmywl && mv tmpmywl $mywhitelist
+	LC_ALL=C cat $myblacklist | sed 's/^ *//; s/ *$//; /^$/d; /^\s*$/d' | sort -u > tmpmybl && mv tmpmybl $myblacklist
+	LC_ALL=C cat $mywhitelist | sed 's/^ *//; s/ *$//; /^$/d; /^\s*$/d' | sort -u > tmpmywl && mv tmpmywl $mywhitelist
 	cat $blacklist | cat $myblacklist - > tmpbl
-	cat $whitelist | cat $mywhitelist - | grep -Fvwf $myblacklist > tmpwl
+	cat $whitelist | cat $mywhitelist - | grep -Fvxf $myblacklist > tmpwl
 fi
 
+# trim leading and trailig whitespace, delete all blank lines including the ones with whitespace
+# remove non-printable non-ASCII characters because DD-WRT dnsmasq throws "bad name at line n" errors
+# merge blacklists with other lists and remove whitelist entries from the stream
 lognecho "> Processing final mphosts/mpdomains files"
-cat $tmphosts | sed $'s/\r$//' | cat tmpbl - | grep -Fvwf tmpwl | sort -u | sed '/^$/d' | awk -v "IP=$ADHOLEIP" '{sub(/\r$/,""); print IP" "$0}' > $mphosts
-cat $tmpdomains | grep -Fvwf tmpwl | sort -u  > $mpdomains
-sed -n -i '/0.0.0.0/!p' $mphosts
-sed -n -i '/0.0.0.0/!p' $mpdomains
+LC_ALL=C cat $tmphosts | sed 's/^ *//; s/ *$//; /^$/d; /^\s*$/d' | tr -cd '\000-\177' | cat tmpbl - | grep -Fvxf tmpwl | sort -u | awk -v "IP=$ADHOLEIP" '{sub(/\r$/,""); print IP" "$0}' > $mphosts
+LC_ALL=C cat $tmpdomains | sed 's/^ *//; s/ *$//; /^$/d; /^\s*$/d' | tr -cd '\000-\177' | grep -Fvwf tmpwl | sort -u > $mpdomains
 
 lognecho "> Removing temporary files"
 rm -f $tmphosts
