@@ -5,7 +5,7 @@ Script to generate massive block lists for DD-WRT
 https://github.com/m-parashar/adbhostgen
 Copyright 2018 Manish Parashar
 
-Developed and tested on: NETGEAR R8500 / DD-WRT v3.0-r35360M kongac (02/19/18)
+Developed and tested on: NETGEAR R8500 / DD-WRT v3.0-r35550M kongac (03/28/18)
 Hardware requirements: Minimum 4GB USB drive partitioned, formatted, and mounted as /jffs (1-2GB), swap (256-512MB), and optionally /opt (1-2GB).
 SEE: https://i.imgur.com/3c5kkTM.png
 
@@ -60,6 +60,26 @@ time the script is executed.
 
 CHANGELOG:
 ----------
+
+20180331:
+POINT RELEASE with all the bugfixes and new features from the alpha releases below.
+
+20180329a2:
+No more "bad name at line n" errors.
+
+20180328a2:
+Changed default ad destination IP from 0.0.0.0 to 0.1.2.3
+
+20180327a1:
+New options:
+-i <ip-address>
+--ip=<ip-address>
+where <ip-address> is an IPv4 address of your own personal ad hell.
+
+20180326a1:
+New options:
+-f, blocks Facebook.com and services
+-F, blocks Facebook, Instagram, and WhatsApp
 
 20180324a6:
 Significant changes and bugfixes. The script should behave better as a cron job now.
