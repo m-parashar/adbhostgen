@@ -1,0 +1,132 @@
+Ad-blocking on DD-WRT
+---------------------
+Script to generate massive block lists for DD-WRT
+
+https://github.com/m-parashar/adbhostgen
+Copyright 2018 Manish Parashar
+
+Developed and tested on: NETGEAR R8500 / DD-WRT v3.0-r35550M kongac (03/28/18)
+Hardware requirements: Minimum 4GB USB drive partitioned, formatted, and mounted as /jffs (1-2GB), swap (256-512MB), and optionally /opt (1-2GB).
+SEE: https://i.imgur.com/3c5kkTM.png
+
+Software requirements: DD-WRT (preferably latest), cURL
+
+Download: https://github.com/m-parashar/adbhostgen/releases/latest
+
+INSTALLATION:
+-------------
+
+1a. Download installer.sh and make it executable (chmod +x), then run it in /tmp or /jffs.
+    It will automatically create /jffs/dnsmasq and extract required files into it. OR
+
+1b. Download and extract adbhostgen.7z or adbhostgen.tar.gz into /jffs/dnsmasq directory.
+
+2. Run adbhostgen.sh in /jffs/dnsmasq
+
+
+SETTINGS:
+---------
+
+1. Disable internal flash (JFFS2) if you already have a USB drive mounted as /jffs.
+   SEE: https://i.imgur.com/bDJBxd8.png
+
+2. Enable DNSMasq and local DNS for LAN and WAN. Add these lines under the additional options section.
+
+	conf-file=/jffs/dnsmasq/mpdomains
+	addn-hosts=/jffs/dnsmasq/mphosts
+
+    SEE: https://i.imgur.com/ez7yLM4.png
+
+3. Enter additional options for dnsmasq if required, for example:
+
+	domain-needed
+	bogus-priv
+
+4. Under Administration -> Cron, enter this or choose your own schedule:
+
+	0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
+
+	SEE: https://i.imgur.com/Y7RAEVk.png
+
+5. Reboot
+
+
+USAGE:
+------
+
+Add your blacklist or whitelist domains to myblacklist and mywhitelist files respectively.
+Do not save anything in blacklist or whitelist files as they will be overwritten every
+time the script is executed.
+
+CHANGELOG:
+----------
+
+20180331:
+POINT RELEASE with all the bugfixes and new features from the alpha releases below.
+
+20180329a2:
+No more "bad name at line n" errors.
+
+20180328a2:
+Changed default ad destination IP from 0.0.0.0 to 0.1.2.3
+
+20180327a1:
+New options:
+-i <ip-address>
+--ip=<ip-address>
+where <ip-address> is an IPv4 address of your own personal ad hell.
+
+20180326a1:
+New options:
+-f, blocks Facebook.com and services
+-F, blocks Facebook, Instagram, and WhatsApp
+
+20180324a6:
+Significant changes and bugfixes. The script should behave better as a cron job now.
+A new option -q or --quiet suppresses output to stdout/console, yet retains log entires.
+Considering that many users are still on ancient DD-WRT versions with outdated and/or
+expired cURL certificates and exotic configuration that often doesn't play well with
+this script, it now uses insecure cURL downloads (-k) as default mode of operation.
+For experienced users, the new --secure command line parameter restores the secure
+TLS/SSL communication with servers. After thinking long and hard and working with
+users on solving their problems, offering sane defaults with switches to enable
+advanced functionality seems like a good tradeoff. For now.
+
+20180315:
+Major update. Code cleanup and bugfixes. Update function added.
+If there are no stopping bugs, minor updates will be rolled out
+directly to Github and users can update to the latest version
+by using the -u or --update command line option. Stable point
+releases with installer will be rolled out as and when there
+are important bugfixes and changes to the codebase.
+
+20180314:
+Minor bugfixes. Lists with false positives moved to BLITZ=3 section.
+BLITZ=1 is now default, since new users are often uncomfortable with
+finding and whitelisting useful harmless services that may be blocked
+by the higher protection levels.
+
+The script now logs important system events directly into syslog.
+
+20180313:
+Minor bugfixes. Official whitelist formatted and updated.
+
+20180312rev2:
+A. added --offline mode, for processing existing lists without re-downloading everything.
+B. BLITZ=0 mode is back. Four levels of protection exist now: 0, 1, 2 [default], and 3.
+   You can override default aggression level with command line arguments.
+C. Added more lists and distributed everything among the four BLITZ levels.
+
+20180312rev1: 
+BUGFIX
+
+20180312:
+A. New command line options to pause and resume protection.
+B. Added more ad/malicious domains in both hosts and dnsmasq format.
+C. BLITZ=0 is no longer an option.
+   BLITZ=1 is the minimum protection level.
+   BLITZ=2 mode now blocks approx 675000 unique ad/mal domains. [DEFAULT]
+   BLITZ=3 is likely to result in ~40-50MB hosts file. Exercise caution.
+
+--
+FOR DETAILS AND SCREENSHOTS: https://www.dd-wrt.com/phpBB2/viewtopic.php?t=307533
