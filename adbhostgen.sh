@@ -536,10 +536,18 @@ if [ $ONLINE -eq 1 ] && ping -q -c 1 -W 1 google.com >/dev/null; then
 
 else
 	lognecho "# NETWORK: DOWN | MODE: OFFLINE"
-	# just in case connectivity is down for the moment
-	# process the blacklists and whitelists anyway
+	logger ">>> $(basename "$0") finished"
+	exit 0
+fi
+
+if [ $ONLINE -eq 0 ]; then
+	lognecho "# NETWORK: DOWN | MODE: OFFLINE"
+	lognecho "# OFFLINE PROCESSING"
 	[ -s $mphosts ] && cat $mphosts | awk '{print $2}' > $tmphosts
 	[ -s $mpdomains ] && cp $mpdomains $tmpdomains
+	restart_dnsmasq
+	logger ">>> $(basename "$0") finished"
+	exit 0
 fi
 
 ###############################################################################
