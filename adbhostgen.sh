@@ -147,7 +147,7 @@ alias MPGET="curl -f -s -k"
 alias MPGETSSL="curl -f -s -k"
 [ $SECURL -eq 1 ] && unalias MPGETSSL && alias MPGETSSL="curl -f -s --capath ${MPDIR} --cacert $CURL_CA_BUNDLE"
 alias MPGETMHK="curl -f -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/"
-alias SEDSPACE="sed -r 's/^[[:blank:]]*//; s/[[:blank:]]*$//; s/^[[:punct:]]*//; s/[[:punct:]]*$//; /^$/d; /^\s*$/d'"
+alias SEDCLEAN="sed -r 's/^[[:blank:]]*//; s/[[:blank:]]*$//; s/^[[:punct:]]*//; s/[[:punct:]]*$//; /^$/d; /^\s*$/d'"
 alias GREPFILTER="grep -o '^[^#]*' | grep -vF -e \"::\" -e \";\" -e \"//\" -e \"http\" -e \"https\" -e \"@\" -e \"mailto\" | tr -cd '\000-\177'"
 
 ###############################################################################
@@ -560,16 +560,16 @@ printFileSize $tmpdomains
 
 # remove duplicates and extra whitespace, sort alphabetically
 lognecho "> Processing blacklist/whitelist files"
-LC_ALL=C cat $blacklist | SEDSPACE | sort | uniq > tmpbl && cp tmpbl $blacklist
-LC_ALL=C cat $whitelist | SEDSPACE | sort | uniq > tmpwl && cp tmpwl $whitelist
+LC_ALL=C cat $blacklist | SEDCLEAN | sort | uniq > tmpbl && cp tmpbl $blacklist
+LC_ALL=C cat $whitelist | SEDCLEAN | sort | uniq > tmpwl && cp tmpwl $whitelist
 
 # if not building for distribution, process myblacklist and mywhitelist files
 # remove duplicates and extra whitespace, sort alphabetically
 # and allow users' myblacklist precedence over defaults
 if [ $DISTRIB -eq 0 ] && { [ -s "$myblacklist" ] || [ -s "$mywhitelist" ]; }; then
 	lognecho "> Processing myblacklist/mywhitelist files"
-	LC_ALL=C cat $myblacklist | SEDSPACE | sort | uniq > tmpmybl && mv tmpmybl $myblacklist
-	LC_ALL=C cat $mywhitelist | SEDSPACE | sort | uniq > tmpmywl && mv tmpmywl $mywhitelist
+	LC_ALL=C cat $myblacklist | SEDCLEAN | sort | uniq > tmpmybl && mv tmpmybl $myblacklist
+	LC_ALL=C cat $mywhitelist | SEDCLEAN | sort | uniq > tmpmywl && mv tmpmywl $mywhitelist
 	cat $blacklist | cat $myblacklist - > tmpbl
 	cat $whitelist | cat $mywhitelist - | grep -Fvwf $myblacklist > tmpwl
 fi
@@ -578,8 +578,8 @@ fi
 # remove non-printable non-ASCII characters because DD-WRT dnsmasq throws "bad name at line n" errors
 # merge blacklists with other lists and remove whitelist entries from the stream
 lognecho "> Processing final mphosts/mpdomains files"
-LC_ALL=C cat $tmphosts | SEDSPACE | cat tmpbl - | grep -Fvwf tmpwl | sort | uniq | awk -v "IP=$ADHOLEIP" '{sub(/\r$/,""); print IP" "$0}' > $mphosts
-LC_ALL=C cat $tmpdomains | SEDSPACE | grep -Fvwf tmpwl | sort | uniq > $mpdomains
+LC_ALL=C cat $tmphosts | SEDCLEAN | cat tmpbl - | grep -Fvwf tmpwl | sort | uniq | awk -v "IP=$ADHOLEIP" '{sub(/\r$/,""); print IP" "$0}' > $mphosts
+LC_ALL=C cat $tmpdomains | SEDCLEAN | grep -Fvwf tmpwl | sort | uniq > $mpdomains
 
 lognecho "> Removing temporary files"
 rm -f $tmphosts
