@@ -36,7 +36,7 @@
 # 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
 #
 
-VERSION="20180725a1"
+VERSION="20180726a1"
 
 ###############################################################################
 
@@ -125,6 +125,8 @@ export SHELL=/bin/sh
 export PATH=/bin:/usr/bin:/sbin:/usr/sbin:/jffs/sbin:/jffs/bin:/jffs/usr/sbin:/jffs/usr/bin:/mmc/sbin:/mmc/bin:/mmc/usr/sbin:/mmc/usr/bin:/opt/sbin:/opt/bin:/opt/usr/sbin:/opt/usr/bin:"${MPDIR}"
 export LD_LIBRARY_PATH=/lib:/usr/lib:/jffs/lib:/jffs/usr/lib:/jffs/usr/local/lib:/mmc/lib:/mmc/usr/lib:/opt/lib:/opt/usr/lib
 export PWD="${MPDIR}"
+LC_ALL=C
+export LC_ALL
 
 ###############################################################################
 
@@ -146,7 +148,7 @@ alias MPGETSSL="curl -f -s -k"
 [ $SECURL -eq 1 ] && unalias MPGETSSL && alias MPGETSSL="curl -f -s --capath ${MPDIR} --cacert $CURL_CA_BUNDLE"
 alias MPGETMHK="curl -f -s -A "Mozilla/5.0" -e http://forum.xda-developers.com/"
 alias SEDSPACE="sed -r 's/^[[:blank:]]*//; s/[[:blank:]]*$//; /^$/d; /^\s*$/d'"
-alias GREPFILTER="tr -cd '\000-\177' | grep -o '^[^#]*' | grep -vF -e \"::\" -e \";\" -e \"//\" -e \"http\" -e \"https\""
+alias GREPFILTER="grep -o '^[^#]*' | grep -vF -e \"::\" -e \";\" -e \"//\" -e \"http\" -e \"https\" -e \"@\" -e \"mailto\" | tr -cd '\000-\177'"
 
 ###############################################################################
 
@@ -342,7 +344,7 @@ fi
 ###############################################################################
 
 # if internet is accessible, download files
-if [ $ONLINE -eq 1 ] && ping -q -c 1 -W 1 google.com >/dev/null; then
+if ping -q -c 1 -W 1 google.com &> /dev/null; then
 
 	lognecho "# NETWORK: UP | MODE: ONLINE"
 	lognecho "# IP ADDRESS FOR ADS: $ADHOLEIP"
@@ -396,7 +398,6 @@ if [ $ONLINE -eq 1 ] && ping -q -c 1 -W 1 google.com >/dev/null; then
 		lognecho "# Unlocking BLITZ=1 level lists"
 
 		lognecho "> Processing more StevenBlack lists"
-		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/data/tyzbit/hosts | GREPFILTER | awk '{print $2}' >> $tmphosts
 		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/data/add.2o7Net/hosts | GREPFILTER | awk '{print $2}' >> $tmphosts
 		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/data/add.Risk/hosts | GREPFILTER | awk '{print $2}' >> $tmphosts
 		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/data/add.Spam/hosts | GREPFILTER | awk '{print $2}' >> $tmphosts
@@ -483,7 +484,7 @@ if [ $ONLINE -eq 1 ] && ping -q -c 1 -W 1 google.com >/dev/null; then
 
 		lognecho "> Processing Windows telemetry lists"
 		MPGETSSL https://raw.githubusercontent.com/tyzbit/hosts/master/data/tyzbit/hosts | GREPFILTER | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/crazy-max/WindowsSpyBlocker/master/data/hosts/win10/spy.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/crazy-max/WindowsSpyBlocker/master/data/hosts/spy.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
 
 		lognecho "> Processing smart TV blocklists"
 		MPGETSSL https://v.firebog.net/hosts/static/SamsungSmart.txt | GREPFILTER >> $tmphosts
@@ -515,7 +516,7 @@ if [ $ONLINE -eq 1 ] && ping -q -c 1 -W 1 google.com >/dev/null; then
 		MPGETSSL https://v.firebog.net/hosts/Kowabit.txt | GREPFILTER >> $tmphosts
 
 		lognecho "> Processing ADZHOSTS list"
-		MPGETSSL https://adzhosts.fr/hosts/adzhosts-mac-linux.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://adzhosts.hizo.fr/hosts/adzhosts-android.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
 	fi
 
 	if [ $NOFB = "f" ]; then
@@ -558,16 +559,16 @@ printFileSize $tmpdomains
 
 # remove duplicates and extra whitespace, sort alphabetically
 lognecho "> Processing blacklist/whitelist files"
-LC_ALL=C cat $blacklist | sed -r 's/^[[:blank:]]*//; s/[[:blank:]]*$//; /^$/d; /^\s*$/d' | sort -u > tmpbl && cp tmpbl $blacklist
-LC_ALL=C cat $whitelist | sed -r 's/^[[:blank:]]*//; s/[[:blank:]]*$//; /^$/d; /^\s*$/d' | sort -u > tmpwl && cp tmpwl $whitelist
+LC_ALL=C cat $blacklist | sed -r 's/^[[:blank:]]*//; s/[[:blank:]]*$//; /^$/d; /^\s*$/d' | sort | uniq > tmpbl && cp tmpbl $blacklist
+LC_ALL=C cat $whitelist | sed -r 's/^[[:blank:]]*//; s/[[:blank:]]*$//; /^$/d; /^\s*$/d' | sort | uniq > tmpwl && cp tmpwl $whitelist
 
 # if not building for distribution, process myblacklist and mywhitelist files
 # remove duplicates and extra whitespace, sort alphabetically
 # and allow users' myblacklist precedence over defaults
 if [ $DISTRIB -eq 0 ] && { [ -s "$myblacklist" ] || [ -s "$mywhitelist" ]; }; then
 	lognecho "> Processing myblacklist/mywhitelist files"
-	LC_ALL=C cat $myblacklist | sed -r 's/^[[:blank:]]*//; s/[[:blank:]]*$//; /^$/d; /^\s*$/d' | sort -u > tmpmybl && mv tmpmybl $myblacklist
-	LC_ALL=C cat $mywhitelist | sed -r 's/^[[:blank:]]*//; s/[[:blank:]]*$//; /^$/d; /^\s*$/d' | sort -u > tmpmywl && mv tmpmywl $mywhitelist
+	LC_ALL=C cat $myblacklist | sed -r 's/^[[:blank:]]*//; s/[[:blank:]]*$//; /^$/d; /^\s*$/d' | sort | uniq > tmpmybl && mv tmpmybl $myblacklist
+	LC_ALL=C cat $mywhitelist | sed -r 's/^[[:blank:]]*//; s/[[:blank:]]*$//; /^$/d; /^\s*$/d' | sort | uniq > tmpmywl && mv tmpmywl $mywhitelist
 	cat $blacklist | cat $myblacklist - > tmpbl
 	cat $whitelist | cat $mywhitelist - | grep -Fvwf $myblacklist > tmpwl
 fi
@@ -576,8 +577,8 @@ fi
 # remove non-printable non-ASCII characters because DD-WRT dnsmasq throws "bad name at line n" errors
 # merge blacklists with other lists and remove whitelist entries from the stream
 lognecho "> Processing final mphosts/mpdomains files"
-LC_ALL=C cat $tmphosts | sed -r 's/^[[:blank:]]*//; s/[[:blank:]]*$//; /^$/d; /^\s*$/d' | cat tmpbl - | grep -Fvwf tmpwl | sort -u | awk -v "IP=$ADHOLEIP" '{sub(/\r$/,""); print IP" "$0}' > $mphosts
-LC_ALL=C cat $tmpdomains | sed -r 's/^[[:blank:]]*//; s/[[:blank:]]*$//; /^$/d; /^\s*$/d' | grep -Fvwf tmpwl | sort -u > $mpdomains
+LC_ALL=C cat $tmphosts | sed -r 's/^[[:blank:]]*//; s/[[:blank:]]*$//; /^$/d; /^\s*$/d' | cat tmpbl - | grep -Fvwf tmpwl | sort | uniq | awk -v "IP=$ADHOLEIP" '{sub(/\r$/,""); print IP" "$0}' > $mphosts
+LC_ALL=C cat $tmpdomains | sed -r 's/^[[:blank:]]*//; s/[[:blank:]]*$//; /^$/d; /^\s*$/d' | grep -Fvwf tmpwl | sort | uniq > $mpdomains
 
 lognecho "> Removing temporary files"
 rm -f $tmphosts
