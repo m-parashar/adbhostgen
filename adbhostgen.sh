@@ -267,6 +267,7 @@ selfUpdate ()
 		fi
 		rm -f $TMPFILE
 	fi
+	logger ">>> $(basename "$0") updated"
 	logger ">>> $(basename "$0") finished"
 	exit 0
 }
