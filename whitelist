@@ -202,12 +202,12 @@ s3.amazonaws.com
 amazon.com
 www.amazon.com
 fls-na.amazon.com
+images-eu.ssl-images-amazon.com
 images-na.ssl-images-amazon.com
 unagi-eu.amazon.com
 m.media-amazon.com
 g-ecx.images-amazon.com
 completion.amazon.co.uk
-images-eu.ssl-images-amazon.com
 omni-grok.amazon.com
 
 # Gaming
@@ -428,4 +428,4 @@ uservoice.com
 ampproject.org
 cdn.ampproject.org
 ravenjs.com
-img.purch.com
+purch.com
