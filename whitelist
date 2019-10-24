@@ -301,12 +301,42 @@ redditmedia.com
 redditstatic.com
 
 # Dropbox
+db.tt
+dropbox.com
+dropboxapi.com
+dropboxbusiness.com
+dropboxcaptcha.com
+dropboxforums.com
+dropboxforum.com
+dropboxinsiders.com
+dropboxmail.com
+dropboxpartners.com
+dropboxstatic.com
+dropbox.zendesk.com
+getdropbox.com
+instructorledlearning.dropboxbusiness.com
+paper.dropbox.com
 dl.dropbox.com
 dl.dropboxusercontent.com
-dropbox.com
 www.dropbox.com
 ns1.dropbox.com
 ns2.dropbox.com
+cdn.arkoselabs.com
+dropbox-api.arkoselabs.com
+dropbox-dns.com
+paper-attachments.s3.amazonaws.com
+dl-web.dropbox.com
+dl-client.dropbox.com
+dl-doc.dropbox.com
+dl-doc.dropboxusercontent.com
+api-content.dropbox.com
+content.dropboxapi.com
+api-content-photos.dropbox.com
+showbox-tr.dropbox.com
+photos.dropbox.com
+photos-*.dropbox.com
+dl-debug*.dropbox.com
+bolt.dropbox.com
 
 # Github
 github.com
