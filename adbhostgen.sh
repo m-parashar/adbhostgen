@@ -36,7 +36,7 @@
 # 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
 #
 
-VERSION="20180727a1"
+VERSION="20191119"
 
 ###############################################################################
 
@@ -329,7 +329,7 @@ TIMERSTART=`date +%s`
 lognecho "======================================================"
 lognecho "|                adbhostgen for DD-WRT               |"
 lognecho "|      https://github.com/m-parashar/adbhostgen      |"
-lognecho "|           Copyright 2018 Manish Parashar           |"
+lognecho "|           Copyright 2019 Manish Parashar           |"
 lognecho "======================================================"
 lognecho "             `date`"
 lognecho "# VERSION: $VERSION"
@@ -376,15 +376,12 @@ if ping -q -c 1 -W 1 google.com &> /dev/null; then
 	MPGETSSL https://s3.amazonaws.com/lists.disconnect.me/simple_malvertising.txt | GREPFILTER >> $tmphosts
 
 	lognecho "> Processing quidsup/notrack lists"
-	MPGETSSL https://raw.githubusercontent.com/quidsup/notrack/master/trackers.txt | GREPFILTER >> $tmphosts
-	MPGETSSL https://raw.githubusercontent.com/quidsup/notrack/master/malicious-sites.txt | GREPFILTER >> $tmphosts
+	MPGETSSL https://gitlab.com/quidsup/notrack-blocklists/raw/master/notrack-blocklist.txt | GREPFILTER >> $tmphosts
+	MPGETSSL https://gitlab.com/quidsup/notrack-blocklists/raw/master/notrack-malware.txt | GREPFILTER >> $tmphosts
 
 	lognecho "> Processing MalwareDomains lists"
 	MPGETSSL https://mirror1.malwaredomains.com/files/justdomains | GREPFILTER >> $tmphosts
 	MPGETSSL https://mirror1.malwaredomains.com/files/immortal_domains.txt | GREPFILTER >> $tmphosts
-
-	lognecho "> Processing abuse.ch blocklists"
-	MPGETSSL https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist | GREPFILTER >> $tmphosts
 
 	lognecho "> Processing Ransomware blocklists"
 	MPGETSSL https://ransomwaretracker.abuse.ch/downloads/RW_DOMBL.txt | GREPFILTER >> $tmphosts
@@ -425,7 +422,7 @@ if ping -q -c 1 -W 1 google.com &> /dev/null; then
 
 		lognecho "> Processing cryptomining and porn lists"
 		MPGETSSL https://raw.githubusercontent.com/Marfjeh/coinhive-block/master/domains | GREPFILTER >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/ZeroDot1/CoinBlockerLists/master/hosts | GREPFILTER | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://zerodot1.gitlab.io/CoinBlockerLists/hosts | GREPFILTER | awk '{print $2}' >> $tmphosts
 		MPGETSSL https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
 		MPGETSSL https://raw.githubusercontent.com/chadmayfield/my-pihole-blocklists/master/lists/pi_blocklist_porn_top1m.list | GREPFILTER >> $tmphosts
 
@@ -475,7 +472,7 @@ if ping -q -c 1 -W 1 google.com &> /dev/null; then
 
 		lognecho "> Processing CHEF-KOCH lists"
 		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/WebRTC-tracking/master/WebRTC.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/Spotify-Ad-free/master/Spotifynulled.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/NSABlocklist/master/HOSTS/HOSTS | GREPFILTER | awk '{print $2}' >> $tmphosts
 		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/Audio-fingerprint-pages/master/AudioFp.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
 		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/Canvas-fingerprinting-pages/master/Canvas.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
 		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/Canvas-Font-Fingerprinting-pages/master/Canvas.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
@@ -515,9 +512,6 @@ if ping -q -c 1 -W 1 google.com &> /dev/null; then
 
 		lognecho "> Processing Kowabit list"
 		MPGETSSL https://v.firebog.net/hosts/Kowabit.txt | GREPFILTER >> $tmphosts
-
-		lognecho "> Processing ADZHOSTS list"
-		MPGETSSL https://adzhosts.hizo.fr/hosts/adzhosts-android.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
 	fi
 
 	if [ $NOFB = "f" ]; then
