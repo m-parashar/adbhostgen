@@ -592,7 +592,8 @@ numDomainsBlocked=$(cat $mpdomains | wc -l | sed 's/^[ \t]*//')
 lognecho "# Number of ad domains blocked: approx $numDomainsBlocked"
 
 lognecho "> Restarting DNS server (dnsmasq)"
-restart_dnsmasq
+# restart_dnsmasq
+killall -HUP dnsmasq
 
 TIMERSTOP=`date +%s`
 RTMINUTES=$(( $((TIMERSTOP - TIMERSTART)) /60 ))
