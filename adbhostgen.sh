@@ -36,7 +36,7 @@
 # 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
 #
 
-VERSION="20191119"
+VERSION="20200108"
 
 ###############################################################################
 
@@ -326,10 +326,11 @@ shift $((OPTIND-1)) # remove parsed options and args from $@ list
 
 # display banner
 TIMERSTART=`date +%s`
+PRY=`date +%Y`
 lognecho "======================================================"
 lognecho "|                adbhostgen for DD-WRT               |"
 lognecho "|      https://github.com/m-parashar/adbhostgen      |"
-lognecho "|           Copyright 2019 Manish Parashar           |"
+lognecho "|           Copyright $PRY Manish Parashar           |"
 lognecho "======================================================"
 lognecho "             `date`"
 lognecho "# VERSION: $VERSION"
@@ -382,6 +383,11 @@ if ping -q -c 1 -W 1 google.com &> /dev/null; then
 	lognecho "> Processing MalwareDomains lists"
 	MPGETSSL https://mirror1.malwaredomains.com/files/justdomains | GREPFILTER >> $tmphosts
 	MPGETSSL https://mirror1.malwaredomains.com/files/immortal_domains.txt | GREPFILTER >> $tmphosts
+
+	lognecho "> Processing anudeepND lists"
+	MPGETSSL https://raw.githubusercontent.com/anudeepND/blacklist/master/adservers.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
+	MPGETSSL https://raw.githubusercontent.com/anudeepND/blacklist/master/CoinMiner.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
+	MPGETSSL https://raw.githubusercontent.com/anudeepND/youtubeadsblacklist/master/domainlist.txt | GREPFILTER >> $tmphosts
 
 	lognecho "> Processing Ransomware blocklists"
 	MPGETSSL https://ransomwaretracker.abuse.ch/downloads/RW_DOMBL.txt | GREPFILTER >> $tmphosts
@@ -464,11 +470,6 @@ if ping -q -c 1 -W 1 google.com &> /dev/null; then
 
 		lognecho "> Processing someonewhocares list"
 		MPGET http://someonewhocares.org/hosts/zero/hosts | GREPFILTER | awk '{print $2}' >> $tmphosts
-
-		lognecho "> Processing anudeepND lists"
-		MPGETSSL https://raw.githubusercontent.com/anudeepND/blacklist/master/adservers.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/anudeepND/blacklist/master/CoinMiner.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/anudeepND/youtubeadsblacklist/master/domainlist.txt | GREPFILTER >> $tmphosts
 
 		lognecho "> Processing CHEF-KOCH lists"
 		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/WebRTC-tracking/master/WebRTC.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
