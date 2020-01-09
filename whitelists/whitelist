@@ -55,6 +55,7 @@ dl.google.com
 dl.l.google.com
 docs.google.com
 drive.google.com
+firestore.googleapis.com
 fonts.gstatic.com
 g.co
 gdata.youtube.com
@@ -119,6 +120,7 @@ play.google.com
 play.googleapis.com
 plus.google.com
 redirector.googlevideo.com
+reminders-pa.googleapis.com
 s.youtube.com
 s.ytimg.com
 safebrowsing-cache.google.com
@@ -325,6 +327,8 @@ cdn.arkoselabs.com
 dropbox-api.arkoselabs.com
 dropbox-dns.com
 paper-attachments.s3.amazonaws.com
+dl.dropboxusercontent.com
+dl.dropbox.com
 dl-web.dropbox.com
 dl-client.dropbox.com
 dl-doc.dropbox.com
