@@ -384,12 +384,6 @@ if ping -q -c 1 -W 1 google.com &> /dev/null; then
 	MPGETSSL https://mirror1.malwaredomains.com/files/justdomains | GREPFILTER >> $tmphosts
 	MPGETSSL https://mirror1.malwaredomains.com/files/immortal_domains.txt | GREPFILTER >> $tmphosts
 
-	lognecho "> Processing Ransomware blocklists"
-	MPGETSSL https://ransomwaretracker.abuse.ch/downloads/RW_DOMBL.txt | GREPFILTER >> $tmphosts
-	MPGETSSL https://ransomwaretracker.abuse.ch/downloads/CW_C2_DOMBL.txt | GREPFILTER >> $tmphosts
-	MPGETSSL https://ransomwaretracker.abuse.ch/downloads/LY_C2_DOMBL.txt | GREPFILTER >> $tmphosts
-	MPGETSSL https://ransomwaretracker.abuse.ch/downloads/TC_C2_DOMBL.txt | GREPFILTER >> $tmphosts
-
 	lognecho "> Processing adaway list"
 	MPGETSSL https://adaway.org/hosts.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
 
