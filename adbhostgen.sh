@@ -36,7 +36,7 @@
 # 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
 #
 
-VERSION="20200108"
+VERSION="20200110"
 
 ###############################################################################
 
@@ -278,46 +278,46 @@ selfUpdate ()
 while getopts "h?v0123fFdDpPqQrRsSoOuUb:w:i:-:" opt; do
 	case ${opt} in
 		h|\? ) printHelp ;;
-		v    ) echo "$VERSION" ; logger ">>> $(basename "$0") finished" ; exit 0 ;;
-		0    ) BLITZ=0 ;;
-		1    ) BLITZ=1 ;;
-		2    ) BLITZ=2 ;;
-		3    ) BLITZ=3 ;;
-		f    ) NOFB="f" ;;
-		F    ) NOFB="F" ;;
-		d|D  ) DISTRIB=1 ;;
-		q|Q  ) QUIET=1 ;;
-		p|P  ) protectOff ;;
-		r|R  ) protectOn ;;
-		s|S  ) SECURL=1 ;;
-		o|O  ) ONLINE=0 ;;
-		u|U  ) selfUpdate ;;
-		b    ) echo "$OPTARG" >> $myblacklist ;;
-		w    ) echo "$OPTARG" >> $mywhitelist ;;
-		i    ) ADHOLEIP="$OPTARG" ;;
-		-    ) LONG_OPTARG="${OPTARG#*=}"
-		case $OPTARG in
-			bl=?*   ) ARG_BL="$LONG_OPTARG" ; echo $ARG_BL >> $myblacklist ;;
-			bl*     ) echo ">>> ERROR: no arguments for --$OPTARG option" >&2; exit 2 ;;
-			wl=?*   ) ARG_WL="$LONG_OPTARG" ; echo $ARG_WL >> $mywhitelist ;;
-			wl*     ) echo ">>> ERROR: no arguments for --$OPTARG option" >&2; exit 2 ;;
-			ip=?*   ) ARG_IP="$LONG_OPTARG" ; ADHOLEIP=$ARG_IP ;;
-			ip*     ) echo ">>> ERROR: no arguments for --$OPTARG option" >&2; exit 2 ;;
-			quiet   ) QUIET=1 ;;
-			pause   ) protectOff ;;
-			resume  ) protectOn ;;
-			secure  ) SECURL=1 ;;
-			offline ) ONLINE=0 ;;
-			help    ) printHelp ;;
-			update  ) selfUpdate ;;
-			version ) echo "$VERSION" ; logger ">>> $(basename "$0") finished" ; exit 0 ;;
-			quiet* | pause* | resume* | secure* | offline* | help* | update* | version* )
-					echo ">>> ERROR: no arguments allowed for --$OPTARG option" >&2; exit 2 ;;
+v    ) echo "$VERSION" ; logger ">>> $(basename "$0") finished" ; exit 0 ;;
+0    ) BLITZ=0 ;;
+1    ) BLITZ=1 ;;
+2    ) BLITZ=2 ;;
+3    ) BLITZ=3 ;;
+f    ) NOFB="f" ;;
+F    ) NOFB="F" ;;
+d|D  ) DISTRIB=1 ;;
+q|Q  ) QUIET=1 ;;
+p|P  ) protectOff ;;
+r|R  ) protectOn ;;
+s|S  ) SECURL=1 ;;
+o|O  ) ONLINE=0 ;;
+u|U  ) selfUpdate ;;
+b    ) echo "$OPTARG" >> $myblacklist ;;
+w    ) echo "$OPTARG" >> $mywhitelist ;;
+i    ) ADHOLEIP="$OPTARG" ;;
+-    ) LONG_OPTARG="${OPTARG#*=}"
+case $OPTARG in
+	bl=?*   ) ARG_BL="$LONG_OPTARG" ; echo $ARG_BL >> $myblacklist ;;
+bl*     ) echo ">>> ERROR: no arguments for --$OPTARG option" >&2; exit 2 ;;
+wl=?*   ) ARG_WL="$LONG_OPTARG" ; echo $ARG_WL >> $mywhitelist ;;
+wl*     ) echo ">>> ERROR: no arguments for --$OPTARG option" >&2; exit 2 ;;
+ip=?*   ) ARG_IP="$LONG_OPTARG" ; ADHOLEIP=$ARG_IP ;;
+ip*     ) echo ">>> ERROR: no arguments for --$OPTARG option" >&2; exit 2 ;;
+quiet   ) QUIET=1 ;;
+pause   ) protectOff ;;
+resume  ) protectOn ;;
+secure  ) SECURL=1 ;;
+offline ) ONLINE=0 ;;
+help    ) printHelp ;;
+update  ) selfUpdate ;;
+version ) echo "$VERSION" ; logger ">>> $(basename "$0") finished" ; exit 0 ;;
+quiet* | pause* | resume* | secure* | offline* | help* | update* | version* )
+echo ">>> ERROR: no arguments allowed for --$OPTARG option" >&2; exit 2 ;;
 			'' )    break ;; # "--" terminates argument processing
-			* )     echo ">>> ERROR: unsupported option --$OPTARG" >&2; exit 2 ;;
-		esac ;;
+* )     echo ">>> ERROR: unsupported option --$OPTARG" >&2; exit 2 ;;
+esac ;;
   	  \? ) exit 2 ;;  # getopts already reported the illegal option
-	esac
+esac
 done
 
 shift $((OPTIND-1)) # remove parsed options and args from $@ list
@@ -383,11 +383,6 @@ if ping -q -c 1 -W 1 google.com &> /dev/null; then
 	lognecho "> Processing MalwareDomains lists"
 	MPGETSSL https://mirror1.malwaredomains.com/files/justdomains | GREPFILTER >> $tmphosts
 	MPGETSSL https://mirror1.malwaredomains.com/files/immortal_domains.txt | GREPFILTER >> $tmphosts
-
-	lognecho "> Processing anudeepND lists"
-	MPGETSSL https://raw.githubusercontent.com/anudeepND/blacklist/master/adservers.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
-	MPGETSSL https://raw.githubusercontent.com/anudeepND/blacklist/master/CoinMiner.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
-	MPGETSSL https://raw.githubusercontent.com/anudeepND/youtubeadsblacklist/master/domainlist.txt | GREPFILTER >> $tmphosts
 
 	lognecho "> Processing Ransomware blocklists"
 	MPGETSSL https://ransomwaretracker.abuse.ch/downloads/RW_DOMBL.txt | GREPFILTER >> $tmphosts
@@ -470,6 +465,11 @@ if ping -q -c 1 -W 1 google.com &> /dev/null; then
 
 		lognecho "> Processing someonewhocares list"
 		MPGET http://someonewhocares.org/hosts/zero/hosts | GREPFILTER | awk '{print $2}' >> $tmphosts
+
+		lognecho "> Processing anudeepND lists"
+		MPGETSSL https://raw.githubusercontent.com/anudeepND/blacklist/master/adservers.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/anudeepND/blacklist/master/CoinMiner.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://raw.githubusercontent.com/anudeepND/youtubeadsblacklist/master/domainlist.txt | GREPFILTER >> $tmphosts
 
 		lognecho "> Processing CHEF-KOCH lists"
 		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/WebRTC-tracking/master/WebRTC.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
