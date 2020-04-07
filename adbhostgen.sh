@@ -7,7 +7,6 @@
 # AUTHOR: Manish Parashar
 #
 # https://github.com/m-parashar/adbhostgen
-# https://gist.github.com/m-parashar/ee38454c27f7a4f4e4ab28249a834ccc
 # https://www.dd-wrt.com/phpBB2/viewtopic.php?t=307533
 #
 # Thanks: List providers and users.
@@ -36,7 +35,7 @@
 # 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
 #
 
-VERSION="20200110"
+VERSION="20200407"
 
 ###############################################################################
 
@@ -395,15 +394,6 @@ if ping -q -c 1 -W 1 google.com &> /dev/null; then
 		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/data/add.Risk/hosts | GREPFILTER | awk '{print $2}' >> $tmphosts
 		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/data/add.Spam/hosts | GREPFILTER | awk '{print $2}' >> $tmphosts
 
-		lognecho "> Processing hosts-file ATS/EXP/GRM lists"
-		MPGETSSL https://hosts-file.net/ad_servers.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://hosts-file.net/exp.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://hosts-file.net/grm.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
-
-		lognecho "> Processing hosts-file HJK/PUP lists"
-		MPGETSSL https://hosts-file.net/hjk.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://hosts-file.net/pup.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
-
 		lognecho "> Processing dshield lists"
 		MPGETSSL https://www.dshield.org/feeds/suspiciousdomains_High.txt | GREPFILTER >> $tmphosts
 		MPGETSSL https://www.dshield.org/feeds/suspiciousdomains_Medium.txt | GREPFILTER >> $tmphosts
@@ -442,14 +432,6 @@ if ping -q -c 1 -W 1 google.com &> /dev/null; then
 		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/data/KADhosts/hosts | GREPFILTER | awk '{print $2}' >> $tmphosts
 		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/data/UncheckyAds/hosts | GREPFILTER | awk '{print $2}' >> $tmphosts
 		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts | GREPFILTER | awk '{print $2}' >> $tmphosts
-
-		lognecho "> Processing hosts-file EMD/FSA lists"
-		MPGETSSL https://hosts-file.net/emd.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://hosts-file.net/fsa.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
-
-		lognecho "> Processing hosts-file MMT/PHA lists"
-		MPGETSSL https://hosts-file.net/mmt.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://hosts-file.net/pha.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
 
 		lognecho "> Processing Cameleon list"
 		MPGET http://sysctl.org/cameleon/hosts | GREPFILTER | awk '{print $2}' >> $tmphosts
@@ -495,9 +477,8 @@ if ping -q -c 1 -W 1 google.com &> /dev/null; then
 	if [ $BLITZ -ge 3 ]; then
 		lognecho "# Unlocking BLITZ=3 level lists"
 
-		lognecho "> Processing hosts-file PSH/PUP/WRZ lists"
-		MPGETSSL https://hosts-file.net/psh.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://hosts-file.net/wrz.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
+		lognecho "> Processing dbl.oisd.nl list"
+		MPGETSSL https://dbl.oisd.nl | GREPFILTER >> $tmphosts
 
 		lognecho "> Processing Mahakala list"
 		MPGETMHK http://adblock.mahakala.is/hosts | GREPFILTER | awk '{print $2}' >> $tmphosts
