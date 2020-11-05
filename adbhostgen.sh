@@ -33,9 +33,8 @@
 # Go to Administration -> Cron (Sets the script to update itself. Choose your own schedule.)
 # Build the adblock files on MON and THU at 6AM
 # 0 6 * * 1,4 root /jffs/dnsmasq/adbhostgen.sh
-#
 
-VERSION="20200420"
+VERSION="20201105"
 
 ###############################################################################
 
@@ -394,11 +393,6 @@ if ping -q -c 1 -W 1 google.com &> /dev/null; then
 		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/data/add.Risk/hosts | GREPFILTER | awk '{print $2}' >> $tmphosts
 		MPGETSSL https://raw.githubusercontent.com/StevenBlack/hosts/master/data/add.Spam/hosts | GREPFILTER | awk '{print $2}' >> $tmphosts
 
-		lognecho "> Processing dshield lists"
-		MPGETSSL https://www.dshield.org/feeds/suspiciousdomains_High.txt | GREPFILTER >> $tmphosts
-		MPGETSSL https://www.dshield.org/feeds/suspiciousdomains_Medium.txt | GREPFILTER >> $tmphosts
-		MPGETSSL https://www.dshield.org/feeds/suspiciousdomains_Low.txt | GREPFILTER >> $tmphosts
-
 		lognecho "> Processing pgl.yoyo.org list"
 		MPGETSSL -d mimetype=plaintext -d hostformat=unixhosts https://pgl.yoyo.org/adservers/serverlist.php? | GREPFILTER | awk '{print $2}' >> $tmphosts
 
@@ -448,11 +442,11 @@ if ping -q -c 1 -W 1 google.com &> /dev/null; then
 		MPGETSSL https://raw.githubusercontent.com/anudeepND/youtubeadsblacklist/master/domainlist.txt | GREPFILTER >> $tmphosts
 
 		lognecho "> Processing CHEF-KOCH lists"
-		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/WebRTC-tracking/master/WebRTC.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/NSABlocklist/master/HOSTS/HOSTS | GREPFILTER | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/Audio-fingerprint-pages/master/AudioFp.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/Canvas-fingerprinting-pages/master/Canvas.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
-		MPGETSSL https://raw.githubusercontent.com/CHEF-KOCH/Canvas-Font-Fingerprinting-pages/master/Canvas.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://gitlab.com/CHEF-KOCH/cks-filterlist/-/raw/master/hosts/Anti-FPT.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://gitlab.com/CHEF-KOCH/cks-filterlist/-/raw/master/hosts/Malware.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://gitlab.com/CHEF-KOCH/cks-filterlist/-/raw/master/hosts/coinminer.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://gitlab.com/CHEF-KOCH/cks-filterlist/-/raw/master/hosts/Ads-tracker.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
+		MPGETSSL https://gitlab.com/CHEF-KOCH/cks-filterlist/-/raw/master/Anti-Corp/hosts/NSABlocklist.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
 
 		lognecho "> Processing joewein.de LLC list"
 		MPGETSSL https://www.joewein.net/dl/bl/dom-bl-base.txt | GREPFILTER >> $tmphosts
@@ -498,6 +492,7 @@ if ping -q -c 1 -W 1 google.com &> /dev/null; then
 	if [ $NOFB = "F" ]; then
 		lognecho "> Blocking Facebook, Messenger, Instagram, WhatsApp"
 		MPGETSSL https://raw.githubusercontent.com/m-parashar/adbhostgen/master/blacklists/facebookall.block >> $tmphosts
+		MPGETSSL https://gitlab.com/CHEF-KOCH/cks-filterlist/-/raw/master/Anti-Corp/hosts/Facebook.txt | GREPFILTER | awk '{print $2}' >> $tmphosts
 	fi
 
 	lognecho "> Updating official blacklist/whitelist files"
@@ -567,8 +562,8 @@ lognecho "# Number of ad hosts blocked: approx $numHostsBlocked"
 numDomainsBlocked=$(cat $mpdomains | wc -l | sed 's/^[ \t]*//')
 lognecho "# Number of ad domains blocked: approx $numDomainsBlocked"
 
-lognecho "> Restarting DNS server (dnsmasq)"
 # restart_dnsmasq
+lognecho "> Restarting DNS server (dnsmasq)"
 killall -HUP dnsmasq
 
 TIMERSTOP=`date +%s`
