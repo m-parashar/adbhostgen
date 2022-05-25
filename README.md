@@ -1,4 +1,5 @@
 # Ad-blocking on DD-WRT
+*deprecated; use [adblock.sh](https://github.com/m-parashar/adblock)*
 ---------------------
 Script to generate a MEGA hosts file for DD-WRT
 
